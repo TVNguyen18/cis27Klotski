@@ -46,13 +46,14 @@ static unsigned int createShader(const string& vertexShader, const string& fragm
 	return program;
 }
 
-// TESTING!!!
-// Another test!
-
 int main() {
 	GLFWwindow* window;
 	unsigned int buffer;
+	unsigned int ibo;
 	unsigned int shader;
+
+	// shader specification
+
 	string vertexShader = "#version 330 core\n"
 		"\n"
 		"layout(location = 0) in vec4 position;"
@@ -66,22 +67,29 @@ int main() {
 		"layout(location = 0) out vec4 color;"
 		"\n"
 		"\nvoid main() {"
-		"\n    color = vec4(0.0, 1.0, 1.0, 1.0);"
+		"\n    color = vec4(1.0, 1.0, 0.25, 1.0);"
 		"\n}";
+
+	
+	//for square
 	float positions[] = {
 		-0.5f, -0.5f,
 		0.5f, -0.5f,
 		0.5f, 0.5f,
-
-		0.5f, 0.5f,
-		-0.5f, 0.5f,
-		-0.5f, -0.5f
+		-0.5f, 0.5f
 	};
 
+	// linked to above, helps draw square
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	// troubleshooting
 	if (!glfwInit())
 		return -1;
 
-	window = glfwCreateWindow(480, 400, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(400, 400, "Hello World", NULL, NULL);
 
 	if (!window) {
 		glfwTerminate();
@@ -94,29 +102,35 @@ int main() {
 		cout << "\nERROR!" << endl;
 
 	cout << glGetString(GL_VERSION) << endl;
+	
 
+	// generate buffer for triangle
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
+	// attach buffer to GPU
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
+	// generate buffer for square
+	glGenBuffers(1, &ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
+		GL_STATIC_DRAW);
+
+
+	// generate shader
 	shader = createShader(vertexShader, fragmentShader);
 	glUseProgram(shader);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	//draw
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/*glBegin(GL_TRIANGLES);  THIS IS THE OLD WAY OF DOING THINGS
-		glVertex2f(-0.5f, -0.5f);
-		glVertex2f(0.0f, 0.5f);
-		glVertex2f(0.5f, -0.5f);
-		glEnd();*/
-
-		glDrawArrays(GL_TRIANGLES, 0, 6); // THIS IS THE NEW WAY
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr); // DRAWING SQUARE
 
 		glfwSwapBuffers(window);
 

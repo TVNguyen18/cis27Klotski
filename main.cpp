@@ -68,16 +68,20 @@ int main() {
 		"\nvoid main() {"
 		"\n    color = vec4(0.0, 1.0, 1.0, 1.0);"
 		"\n}";
-	float positions[6] = {
+	float positions[] = {
 		-0.5f, -0.5f,
-		0.0f, 0.5f,
-		0.5f, -0.5f
+		0.5f, -0.5f,
+		0.5f, 0.5f,
+
+		0.5f, 0.5f,
+		-0.5f, 0.5f,
+		-0.5f, -0.5f
 	};
 
 	if (!glfwInit())
 		return -1;
 
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(480, 400, "Hello World", NULL, NULL);
 
 	if (!window) {
 		glfwTerminate();
@@ -93,7 +97,7 @@ int main() {
 
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
@@ -112,7 +116,7 @@ int main() {
 		glVertex2f(0.5f, -0.5f);
 		glEnd();*/
 
-		glDrawArrays(GL_TRIANGLES, 0, 3); // THIS IS THE NEW WAY
+		glDrawArrays(GL_TRIANGLES, 0, 6); // THIS IS THE NEW WAY
 
 		glfwSwapBuffers(window);
 

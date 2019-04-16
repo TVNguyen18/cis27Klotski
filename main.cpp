@@ -6,6 +6,8 @@
 #include <sstream>
 using namespace std;
 
+//test
+
 struct ShaderProgramSource {
 	string VertexSource;
 	string FragmentSource;

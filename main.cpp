@@ -125,6 +125,8 @@ int main() {
 
 	glfwMakeContextCurrent(window);
 
+	glfwSwapInterval(1);
+
 	if (glewInit() != GLEW_OK)
 		cout << "\nERROR!" << endl;
 

@@ -1,7 +1,42 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 using namespace std;
+
+struct ShaderProgramSource {
+	string VertexSource;
+	string FragmentSource;
+};
+
+static ShaderProgramSource parseShader(const string& filePath) {
+	ifstream stream(filePath);
+
+	enum class ShaderType {
+		NONE = -1, VERTEX = 0, FRAGMENT = 1
+	};
+	string line;
+	stringstream ss[2];
+	ShaderType type = ShaderType::NONE;
+
+	while (getline(stream, line)) {
+		if (line.find("#shader") != string::npos) {
+			if (line.find("vertex") != string::npos) {
+				type = ShaderType::VERTEX;
+			} else {
+				if (line.find("fragment") != string::npos) {
+					type = ShaderType::FRAGMENT;
+				}
+			}
+		} else {
+			ss[(int)type] << line << '\n';
+		}
+	}
+
+	return { ss[0].str(), ss[1].str() };
+}
 
 static unsigned int compileShader(unsigned int type, const string& source) {
 	unsigned int id = glCreateShader(type);
@@ -18,8 +53,8 @@ static unsigned int compileShader(unsigned int type, const string& source) {
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		message = new char[length];
 		glGetShaderInfoLog(id, length, &length, message);
-		cout << "Failed to compile " << 
-			(type == GL_VERTEX_SHADER ? "vertex" : "fragment") 
+		cout << "Failed to compile " <<
+			(type == GL_VERTEX_SHADER ? "vertex" : "fragment")
 			<< " shader!" << endl
 			<< message << endl;
 
@@ -46,46 +81,38 @@ static unsigned int createShader(const string& vertexShader, const string& fragm
 	return program;
 }
 
+
 int main() {
 	GLFWwindow* window;
 	unsigned int buffer;
 	unsigned int ibo;
 	unsigned int shader;
+	int location;
+	float increment = 0.05f;
+	float r = 0.0;
+	ShaderProgramSource source = parseShader("shader.shader");
 
-	// shader specification
-
-	string vertexShader = "#version 330 core\n"
-		"\n"
-		"layout(location = 0) in vec4 position;"
-		"\n"
-		"\nvoid main() {"
-		"\n    gl_Position = position;"
-		"\n}";
-
-	string fragmentShader = "#version 330 core\n"
-		"\n"
-		"layout(location = 0) out vec4 color;"
-		"\n"
-		"\nvoid main() {"
-		"\n    color = vec4(1.0, 1.0, 0.25, 1.0);"
-		"\n}";
-
-	
-	//for square
 	float positions[] = {
-		-0.5f, -0.5f,
-		0.5f, -0.5f,
-		0.5f, 0.5f,
-		-0.5f, 0.5f
+		-0.25f, 0.5f,
+		0.25f, 0.5f,
+		0.25f, 1.0f,
+		-0.25f, 1.0f
 	};
-
-	// linked to above, helps draw square
 	unsigned int indices[] = {
 		0, 1, 2,
 		2, 3, 0
 	};
+	float positions2[] = {
+		-0.75f, 0.5f,
+		-0.5f, 0.5f,
+		-0.5f, 1.0f,
+		-0.75f, 1.0f
+	};
+	unsigned int indices2[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
 
-	// troubleshooting
 	if (!glfwInit())
 		return -1;
 
@@ -101,17 +128,14 @@ int main() {
 	if (glewInit() != GLEW_OK)
 		cout << "\nERROR!" << endl;
 
-	cout << glGetString(GL_VERSION) << endl;
-	
-
 	// generate buffer for triangle
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
 	// attach buffer to GPU
-	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+	glEnableVertexAttribArray(0);
 
 	// generate buffer for square
 	glGenBuffers(1, &ibo);
@@ -119,18 +143,38 @@ int main() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
 		GL_STATIC_DRAW);
 
-
 	// generate shader
-	shader = createShader(vertexShader, fragmentShader);
+	shader = createShader(source.VertexSource, source.FragmentSource);
 	glUseProgram(shader);
+	location = glGetUniformLocation(shader, "uColor");
+	//glUniform4f(location, 1.0, 0.0, 1.0, 1.0);
 
+	//unbind
+	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	//draw
 	while (!glfwWindowShouldClose(window)) {
+
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr); // DRAWING SQUARE
+		//VAO
+		glUniform4f(location, r, 0.3, 0.8, 1.0);
+		glUseProgram(shader);
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+		glEnableVertexAttribArray(0);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+		if (r > 1.0f)
+			increment = -0.05f;
+		else
+			if (r < 0.0)
+				increment = 0.05f;
+
+		r += increment;
 
 		glfwSwapBuffers(window);
 

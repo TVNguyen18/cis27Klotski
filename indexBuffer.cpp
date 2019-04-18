@@ -8,21 +8,23 @@ using namespace std;
 
 #include "indexBuffer.h"
 
-VertexBuffer::VertexBuffer(const void* data, unsigned int size) {
+IndexBuffer::IndexBuffer(const unsigned* data, unsigned int count)
+    : mCount(0) {
 	glGenBuffers(1, &mRendererID);
-	glBindBuffer(GL_ARRAY_BUFFER, mRendererID);
-	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRendererID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int),
+		data, GL_STATIC_DRAW);
 }
 
-VertexBuffer::~VertexBuffer() {
+IndexBuffer::~IndexBuffer() {
 	glDeleteBuffers(1, &mRendererID);
 }
 
-void VertexBuffer::bind() {
-	glBindBuffer(GL_ARRAY_BUFFER, mRendererID);
+void IndexBuffer::bind() const {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRendererID);
 }
 
-void VertexBuffer::unbind() {
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+void IndexBuffer::unbind() const {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 

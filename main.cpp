@@ -4,6 +4,9 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+
+#include "vertexBuffer.h"
+#include "indexBuffer.h"
 using namespace std;
 
 //test
@@ -96,7 +99,6 @@ int main() {
 	float increment = 0.05f;
 	float r = 0.0;
 	ShaderProgramSource source = parseShader("shader.shader");
-
 	float positions[] = {
 		-0.25f, 0.5f,
 		0.25f, 0.5f,
@@ -113,11 +115,6 @@ int main() {
 		-0.5f, 1.0f,
 		-0.75f, 1.0f
 	};
-	unsigned int indices2[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-
 	unsigned int vao;
 
 	if (!glfwInit())
@@ -147,10 +144,6 @@ int main() {
 	glBindVertexArray(vao);
 
 	// generate buffer for triangle
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
-
 	// attach buffer to GPU
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 	glEnableVertexAttribArray(0);

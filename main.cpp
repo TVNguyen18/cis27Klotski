@@ -8,6 +8,9 @@ using namespace std;
 
 //test
 
+// Note: many tutorials and videos use GLuint.
+// GLuint is the OpenGl equivalent of unsigned int.
+
 struct ShaderProgramSource {
 	string VertexSource;
 	string FragmentSource;

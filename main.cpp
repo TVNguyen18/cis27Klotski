@@ -115,8 +115,14 @@ int main() {
 		2, 3, 0
 	};
 
+	unsigned int vao;
+
 	if (!glfwInit())
 		return -1;
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	window = glfwCreateWindow(400, 400, "Hello World", NULL, NULL);
 
@@ -132,10 +138,15 @@ int main() {
 	if (glewInit() != GLEW_OK)
 		cout << "\nERROR!" << endl;
 
+	cout << glGetString(GL_VERSION) << endl;
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	// generate buffer for triangle
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
 	// attach buffer to GPU
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
@@ -154,6 +165,7 @@ int main() {
 	//glUniform4f(location, 1.0, 0.0, 1.0, 1.0);
 
 	//unbind
+	glBindVertexArray(0);
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -162,13 +174,13 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//VAO
 		glUniform4f(location, r, 0.3, 0.8, 1.0);
 		glUseProgram(shader);
-		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBindVertexArray(vao); // instead of having to use 
+		                        //glBindBuffer(GL_ARRAY_BUFFER, buffer) 
+		                        //and the glVertexAttribPointer 
+		                        //& glEnableVertexAttribArray
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-		glEnableVertexAttribArray(0);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 

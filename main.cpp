@@ -14,6 +14,8 @@ using namespace std;
 // Note: many tutorials and videos use GLuint.
 // GLuint is the OpenGl equivalent of unsigned int.
 
+// shader creation programs:
+
 struct ShaderProgramSource {
 	string VertexSource;
 	string FragmentSource;
@@ -89,7 +91,7 @@ static unsigned int createShader(const string& vertexShader, const string& fragm
 	return program;
 }
 
-
+// main
 int main() {
 	GLFWwindow* window;
 	unsigned int buffer;
@@ -99,7 +101,7 @@ int main() {
 	float increment = 0.05f;
 	float r = 0.0;
 	ShaderProgramSource source = parseShader("shader.shader");
-	float positions[] = {
+	float positions[] = { // vertices of square
 		-0.25f, 0.5f,
 		0.25f, 0.5f,
 		0.25f, 1.0f,
@@ -135,6 +137,7 @@ int main() {
 
 	glfwMakeContextCurrent(window);
 
+	// makes blinking slower
 	glfwSwapInterval(1);
 
 	if (glewInit() != GLEW_OK)
@@ -147,6 +150,7 @@ int main() {
 
 	// generate buffer for triangle
 	vb = new VertexBuffer(positions, 4 * 2 * sizeof(float));
+
 	// attach buffer to GPU
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 	glEnableVertexAttribArray(0);

@@ -116,6 +116,8 @@ int main() {
 		-0.75f, 1.0f
 	};
 	unsigned int vao;
+	VertexBuffer* vb = nullptr;
+	IndexBuffer* ib = nullptr;
 
 	if (!glfwInit())
 		return -1;
@@ -144,15 +146,13 @@ int main() {
 	glBindVertexArray(vao);
 
 	// generate buffer for triangle
+	vb = new VertexBuffer(positions, 4 * 2 * sizeof(float));
 	// attach buffer to GPU
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 	glEnableVertexAttribArray(0);
 
 	// generate buffer for square
-	glGenBuffers(1, &ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
-		GL_STATIC_DRAW);
+	ib = new IndexBuffer(indices, 6);
 
 	// generate shader
 	shader = createShader(source.VertexSource, source.FragmentSource);
@@ -176,7 +176,7 @@ int main() {
 		                        //glBindBuffer(GL_ARRAY_BUFFER, buffer) 
 		                        //and the glVertexAttribPointer 
 		                        //& glEnableVertexAttribArray
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		ib->bind();
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
@@ -191,6 +191,8 @@ int main() {
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
+
+		glDeleteProgram(shader);
 	}
 
 	glfwTerminate();

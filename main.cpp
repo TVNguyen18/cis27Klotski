@@ -174,7 +174,7 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUniform4f(location, r, 0.3, 0.8, 1.0);
+		glUniform4f(location, r, 0.9, 0.3, 1.0);
 		glUseProgram(shader);
 		glBindVertexArray(vao); // instead of having to use 
 		                        //glBindBuffer(GL_ARRAY_BUFFER, buffer) 
@@ -200,4 +200,9 @@ int main() {
 	}
 
 	glfwTerminate();
+
+	free(vb);
+	free(ib);
+	vb = nullptr;
+	ib = nullptr;
 }

@@ -7,6 +7,7 @@
 
 #include "vertexBuffer.h"
 #include "indexBuffer.h"
+#include "vertexArray.h"
 using namespace std;
 
 //test
@@ -120,6 +121,9 @@ int main() {
 	unsigned int vao;
 	VertexBuffer* vb = nullptr;
 	IndexBuffer* ib = nullptr;
+	VertexArray* va = nullptr;
+	VertexBufferLayout layout;
+
 
 	if (!glfwInit())
 		return -1;
@@ -149,11 +153,14 @@ int main() {
 	glBindVertexArray(vao);
 
 	// generate buffer for triangle
+
 	vb = new VertexBuffer(positions, 4 * 2 * sizeof(float));
 
+	
 	// attach buffer to GPU
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-	glEnableVertexAttribArray(0);
+	va = new VertexArray();
+	layout.push<float>(2);
+	va->addBuffer(*vb, layout);
 
 	// generate buffer for square
 	ib = new IndexBuffer(indices, 6);
@@ -176,7 +183,7 @@ int main() {
 
 		glUniform4f(location, r, 0.8, 0.9, 1.0);
 		glUseProgram(shader);
-		glBindVertexArray(vao); // instead of having to use 
+		va->bind(); // instead of having to use 
 		                        //glBindBuffer(GL_ARRAY_BUFFER, buffer) 
 		                        //and the glVertexAttribPointer 
 		                        //& glEnableVertexAttribArray
@@ -201,8 +208,10 @@ int main() {
 
 	glfwTerminate();
 
-	free(vb);
-	free(ib);
+	delete vb;
+	delete ib;
+	delete va;
 	vb = nullptr;
 	ib = nullptr;
+	va = nullptr;
 }

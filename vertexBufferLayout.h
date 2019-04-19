@@ -7,6 +7,16 @@ struct VertexBufferElement {
     unsigned int type;
 	unsigned int count;
 	unsigned char normalized;
+
+	static unsigned getSizeOfType(unsigned int type) {
+		switch (type) {
+		case GL_FLOAT: return 4;
+		case GL_UNSIGNED_INT: return 4;
+		case GL_UNSIGNED_BYTE: return 1;
+		}
+
+		return 0;
+	}
 };
 
 class VertexBufferLayout {
@@ -16,26 +26,26 @@ public:
 	}
 	
 	template<typename T>
-	void push(int count) {
+	void push(unsigned int count) {
 		static_assert(false);
 	}
 
 	template<>
-	void push<float>(int count) {
-		mElements.push_back({GL_FLOAT, static_cast<unsigned int>(count), GL_FALSE});
-		mStride += sizeof(GLfloat);
+	void push<float>(unsigned int count) {
+		mElements.push_back({GL_FLOAT, count, GL_FALSE});
+		mStride += count * VertexBufferElement::getSizeOfType(GL_FLOAT);
 	}
 
 	template<>
-	void push<unsigned int>(int count) {
-		mElements.push_back({GL_UNSIGNED_INT, static_cast<unsigned int>(count), GL_TRUE});
-		mStride += sizeof(GLuint);
+	void push<unsigned int>(unsigned int count) {
+		mElements.push_back({GL_UNSIGNED_INT, count, GL_TRUE});
+		mStride += count * VertexBufferElement::getSizeOfType(GL_UNSIGNED_INT);
 	}
 
 	template<>
-	void push<unsigned char>(int count) {
-		mElements.push_back({GL_UNSIGNED_BYTE, static_cast<unsigned int>(count), GL_FALSE});
-		mStride += sizeof(GLbyte);
+	void push<unsigned char>(unsigned int count) {
+		mElements.push_back({GL_UNSIGNED_BYTE, count, GL_FALSE});
+		mStride += VertexBufferElement::getSizeOfType(GL_UNSIGNED_BYTE);
 	}
 
 	inline const vector<VertexBufferElement> getElements() const { return mElements; }

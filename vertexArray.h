@@ -1,3 +1,5 @@
+#pragma once
+
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 
@@ -7,6 +9,9 @@ public:
 	~VertexArray();
 
 	void addBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
-private:
 
+	void bind() const;
+	void unbind() const;
+private:
+	unsigned int mRendererID;
 };

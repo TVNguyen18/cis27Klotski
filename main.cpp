@@ -8,6 +8,7 @@
 #include "vertexBuffer.h"
 #include "indexBuffer.h"
 #include "vertexArray.h"
+#include "shader.h"
 using namespace std;
 
 //test
@@ -15,93 +16,14 @@ using namespace std;
 // Note: many tutorials and videos use GLuint.
 // GLuint is the OpenGl equivalent of unsigned int.
 
-// shader creation programs:
-
-struct ShaderProgramSource {
-	string VertexSource;
-	string FragmentSource;
-};
-
-static ShaderProgramSource parseShader(const string& filePath) {
-	ifstream stream(filePath);
-
-	enum class ShaderType {
-		NONE = -1, VERTEX = 0, FRAGMENT = 1
-	};
-	string line;
-	stringstream ss[2];
-	ShaderType type = ShaderType::NONE;
-
-	while (getline(stream, line)) {
-		if (line.find("#shader") != string::npos) {
-			if (line.find("vertex") != string::npos) {
-				type = ShaderType::VERTEX;
-			} else {
-				if (line.find("fragment") != string::npos) {
-					type = ShaderType::FRAGMENT;
-				}
-			}
-		} else {
-			ss[(int)type] << line << '\n';
-		}
-	}
-
-	return { ss[0].str(), ss[1].str() };
-}
-
-static unsigned int compileShader(unsigned int type, const string& source) {
-	unsigned int id = glCreateShader(type);
-	const char* src = source.c_str();
-	int result;
-	int length;
-	char* message;
-	glShaderSource(id, 1, &src, nullptr);
-	glCompileShader(id);
-
-	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-
-	if (!result) {
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-		message = new char[length];
-		glGetShaderInfoLog(id, length, &length, message);
-		cout << "Failed to compile " <<
-			(type == GL_VERTEX_SHADER ? "vertex" : "fragment")
-			<< " shader!" << endl
-			<< message << endl;
-
-		glDeleteShader(id);
-		return 0;
-	}
-
-	return id;
-}
-
-static unsigned int createShader(const string& vertexShader, const string& fragmentShader) {
-	unsigned int program = glCreateProgram();
-	unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
-	unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
-	glLinkProgram(program);
-	glValidateProgram(program);
-
-	glDeleteShader(vs);
-	glDeleteShader(fs);
-
-	return program;
-}
-
 // main
 int main() {
 	GLFWwindow* window;
 	unsigned int buffer;
 	unsigned int ibo;
-	unsigned int shader;
 	int location;
 	float increment = 0.05f;
 	float r = 0.0;
-	ShaderProgramSource source = parseShader("shader.shader");
 	float positions[] = { // vertices of square
 		-0.25f, 0.5f,
 		0.25f, 0.5f,
@@ -123,7 +45,7 @@ int main() {
 	IndexBuffer* ib = nullptr;
 	VertexArray* va = nullptr;
 	VertexBufferLayout layout;
-
+	Shader* shader = nullptr;
 
 	if (!glfwInit())
 		return -1;
@@ -164,25 +86,26 @@ int main() {
 
 	// generate buffer for square
 	ib = new IndexBuffer(indices, 6);
-
+	
 	// generate shader
-	shader = createShader(source.VertexSource, source.FragmentSource);
-	glUseProgram(shader);
-	location = glGetUniformLocation(shader, "uColor");
-	//glUniform4f(location, 1.0, 0.0, 1.0, 1.0);
+	shader = new Shader("shader.shader");
+	shader->bind();
+
+	shader->setUniform4F("uColor", 1.0, 0.0, 1.0, 1.0);
 
 	//unbind
-	glBindVertexArray(0);
-	glUseProgram(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	va->unbind();
+	shader->unbind();
+	vb->unbind();
+	ib->unbind();
 
 	while (!glfwWindowShouldClose(window)) {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUniform4f(location, r, 0.8, 0.9, 1.0);
-		glUseProgram(shader);
+		shader->bind();
+
+		shader->setUniform4F("uColor", r, 0.8, 0.9, 1.0);
 		va->bind(); // instead of having to use 
 		                        //glBindBuffer(GL_ARRAY_BUFFER, buffer) 
 		                        //and the glVertexAttribPointer 
@@ -202,8 +125,6 @@ int main() {
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
-
-		glDeleteProgram(shader);
 	}
 
 	glfwTerminate();

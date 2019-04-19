@@ -1,3 +1,5 @@
+#pragma once
+
 class IndexBuffer {
 public:
 	IndexBuffer(const unsigned* data, unsigned int count);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 using namespace std;
 
 struct ShaderProgramSource {
@@ -19,6 +20,7 @@ public:
 	void setUniform4F(const string& name, float v0, float v1, float v2, float v3);
 private:
 	string mFilePath;
+	unordered_map<string, int> mUniformLocationCache;
 	unsigned int mRendererID;
 	unsigned int getUniformLocation(const string& name);
 	ShaderProgramSource parseShader(const string& filePath);

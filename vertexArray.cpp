@@ -11,10 +11,10 @@ VertexArray::~VertexArray() {
 void VertexArray::addBuffer(const VertexBuffer & vb, const VertexBufferLayout & layout) {
 	unsigned int i;
 	unsigned int offset = 0;
-
+	const auto& elements = layout.getElements();
 	bind();
 	vb.bind();
-	const auto& elements = layout.getElements();
+	
 	for (i = 0; i < elements.size(); i++) {
 		const auto& element = elements[i];
 		glEnableVertexAttribArray(0);

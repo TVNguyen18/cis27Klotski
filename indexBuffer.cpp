@@ -9,7 +9,7 @@ using namespace std;
 #include "indexBuffer.h"
 
 IndexBuffer::IndexBuffer(const unsigned* data, unsigned int count)
-    : mCount(0) {
+    : mCount(count) {
 	glGenBuffers(1, &mRendererID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRendererID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int),

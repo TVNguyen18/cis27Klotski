@@ -9,6 +9,7 @@
 #include "indexBuffer.h"
 #include "vertexArray.h"
 #include "shader.h"
+#include "renderer.h"
 using namespace std;
 
 //test
@@ -25,10 +26,10 @@ int main() {
 	float increment = 0.05f;
 	float r = 0.0;
 	float positions[] = { // vertices of square
-		-0.25f, 0.5f,
-		0.25f, 0.5f,
-		0.25f, 1.0f,
-		-0.25f, 1.0f
+		0.078f, 0.1f,
+		0.31f, 0.1f,
+		0.31f, 0.42f,
+		0.078f, 0.42f
 	};
 	unsigned int indices[] = {
 		0, 1, 2,
@@ -46,6 +47,7 @@ int main() {
 	VertexArray* va = nullptr;
 	VertexBufferLayout layout;
 	Shader* shader = nullptr;
+	Renderer renderer;
 
 	if (!glfwInit())
 		return -1;
@@ -54,7 +56,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(400, 400, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
 
 	if (!window) {
 		glfwTerminate();
@@ -78,7 +80,6 @@ int main() {
 
 	vb = new VertexBuffer(positions, 4 * 2 * sizeof(float));
 
-	
 	// attach buffer to GPU
 	va = new VertexArray();
 	layout.push<float>(2);
@@ -103,16 +104,17 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		shader->bind();
+		//shader->bind();
 
 		shader->setUniform4F("uColor", r, 0.8, 0.9, 1.0);
-		va->bind(); // instead of having to use 
+		/*va->bind(); // instead of having to use 
 		                        //glBindBuffer(GL_ARRAY_BUFFER, buffer) 
 		                        //and the glVertexAttribPointer 
 		                        //& glEnableVertexAttribArray
 		ib->bind();
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);*/
+		renderer.draw(*va, *ib, *shader);
 
 		if (r > 1.0f)
 			increment = -0.05f;

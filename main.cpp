@@ -26,20 +26,24 @@ int main() {
 	float increment = 0.05f;
 	float r = 0.0;
 	float positions[] = { // vertices of square
-		0.078f, 0.1f,
+		/*0.078f, 0.1f,
 		0.31f, 0.1f,
 		0.31f, 0.42f,
-		0.078f, 0.42f
+		0.078f, 0.42f*/
+		-0.25f, 0.5f,
+		0.25f, 0.5f,
+		0.25f, 1.0f,
+		-0.25f, 1.0f
 	};
 	unsigned int indices[] = {
 		0, 1, 2,
 		2, 3, 0
 	};
 	float positions2[] = {
-		-0.75f, 0.5f,
 		-0.5f, 0.5f,
-		-0.5f, 1.0f,
-		-0.75f, 1.0f
+		-0.25f, 0.5f,
+		-0.25f, 1.0f,
+		-0.5f, 1.0f
 	};
 	unsigned int vao;
 	VertexBuffer* vb = nullptr;
@@ -47,6 +51,12 @@ int main() {
 	VertexArray* va = nullptr;
 	VertexBufferLayout layout;
 	Shader* shader = nullptr;
+	unsigned int vao2;
+	VertexBuffer* vb2 = nullptr;
+	IndexBuffer* ib2 = nullptr;
+	VertexArray* va2 = nullptr;
+	VertexBufferLayout layout2;
+	Shader* shader2 = nullptr;
 	Renderer renderer;
 
 	if (!glfwInit())
@@ -56,7 +66,8 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	//window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(400, 400, "Hello World", NULL, NULL);
 
 	if (!window) {
 		glfwTerminate();
@@ -92,7 +103,7 @@ int main() {
 	shader = new Shader("shader.shader");
 	shader->bind();
 
-	shader->setUniform4F("uColor", 1.0, 0.0, 1.0, 1.0);
+	//shader->setUniform4F("uColor", 1.0, 0.0, 1.0, 1.0);
 
 	//unbind
 	va->unbind();
@@ -100,21 +111,50 @@ int main() {
 	vb->unbind();
 	ib->unbind();
 
+	glGenVertexArrays(1, &vao2);
+	glBindVertexArray(vao2);
+
+	// generate buffer for triangle
+
+	vb2 = new VertexBuffer(positions2, 4 * 2 * sizeof(float));
+
+	// attach buffer to GPU
+	va2 = new VertexArray();
+	layout2.push<float>(2);
+	va2->addBuffer(*vb2, layout2);
+
+	// generate buffer for square
+	ib2 = new IndexBuffer(indices, 6);
+
+	// generate shader
+	shader2 = new Shader("shader.shader");
+	shader2->bind();
+
+	//shader->setUniform4F("uColor", 1.0, 0.0, 1.0, 1.0);
+
+	//unbind
+	va2->unbind();
+	shader2->unbind();
+	vb2->unbind();
+	ib2->unbind();
+
 	while (!glfwWindowShouldClose(window)) {
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//shader->bind();
+		shader->bind();
 
 		shader->setUniform4F("uColor", r, 0.8, 0.9, 1.0);
-		/*va->bind(); // instead of having to use 
-		                        //glBindBuffer(GL_ARRAY_BUFFER, buffer) 
-		                        //and the glVertexAttribPointer 
-		                        //& glEnableVertexAttribArray
-		ib->bind();
+		//shader2->setUniform4F("uColor", 1.0, 1.0, 0.0, 1.0);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);*/
 		renderer.draw(*va, *ib, *shader);
+
+		shader2->bind();
+
+		shader2->setUniform4F("uColor", 1.0, 1.0, 0.0, 1.0);
+
+
+		renderer.draw(*va2, *ib2, *shader2);
 
 		if (r > 1.0f)
 			increment = -0.05f;

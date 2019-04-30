@@ -28,6 +28,14 @@ int main() {
 	GLuint VAO;
 	GLuint VBO;
 	GLuint EBO;
+	GLuint VBO2;
+
+	vector<glm::vec2> position2{
+		glm::vec2(0.0f, 1.0f),
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(1.0f, 1.0)
+	};
 
 	vector<glm::vec3> position{
 		// obj 1
@@ -142,7 +150,8 @@ int main() {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	glGenBuffers(1, &VBO);	
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO2);
 		
 	string vertexSrc = readShaderSource("../vertex_shader.shader");
 	string fragmentSrc = readShaderSource("../fragment_shader.shader");
@@ -172,8 +181,8 @@ int main() {
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	/*
-	// texture 1
+	
+	/*// texture 1
 	int imageWidth = 0;
 	int imageHeight = 0;
 	unsigned char* image = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
@@ -207,8 +216,14 @@ int main() {
 
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	SOIL_free_image_data(image);	
-	*/
+	SOIL_free_image_data(image);*/
+
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		sizeof(indices1),
+		indices1,
+		GL_STATIC_DRAW);
 
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -224,12 +239,12 @@ int main() {
 		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);				
 		
 
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		//glGenBuffers(1, &EBO);
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		/*glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 			sizeof(indices1),
 			indices1,
-			GL_STATIC_DRAW);
+			GL_STATIC_DRAW);*/
 
 		glEnableVertexAttribArray(0);			
 

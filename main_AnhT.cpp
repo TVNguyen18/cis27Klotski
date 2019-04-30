@@ -17,6 +17,8 @@ void displayVersion();
 string readShaderSource(string);
 bool compileShader(GLuint);
 
+int uniformLocation;
+
 glm::vec3 translate(glm::vec3, GLfloat, GLfloat, GLfloat);
 glm::vec3 scale(glm::vec3, GLfloat, GLfloat, GLfloat);
 glm::vec3 rotate(glm::vec3, GLfloat, GLfloat, GLfloat, GLfloat);
@@ -86,7 +88,7 @@ int main() {
 		glm::vec3(0.634f, -0.513f, 0.0f),
 		glm::vec3(0.634f, -0.838f, 0.0f),
 		glm::vec3(0.878f, -0.513f, 0.0f),
-		glm::vec3(0.878f, -0.838f, 0.0f)
+		glm::vec3(0.878f, -0.838f, 0.0f),		
 	};
 	
 	GLuint indices1[] = {
@@ -170,15 +172,56 @@ int main() {
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+	/*
+	// texture 1
+	int imageWidth = 0;
+	int imageHeight = 0;
+	unsigned char* image = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	GLuint texture0;
+
+	glGenTextures(1, &texture0);
+	glBindTexture(GL_TEXTURE_2D, texture0);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	if (image) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}	
+	
+	
+
+	// Activate texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0);
+
+	//Update uniform
+	uniformLocation = glGetUniformLocation(shaderProgramID, "texture0");
+	
+
+	glActiveTexture(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	SOIL_free_image_data(image);	
+	*/
+
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaderProgramID);
-		int uniformLocation = glGetUniformLocation(shaderProgramID, "my_Color");
 
+		
+		
+		uniformLocation = glGetUniformLocation(shaderProgramID, "my_Color");
+		
 		// draw 1st obj		
 
-		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);
+		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);				
 		
 
 		glGenBuffers(1, &EBO);
@@ -191,64 +234,29 @@ int main() {
 		glEnableVertexAttribArray(0);			
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	
-		
+
+	
 		//draw 2nd obj
 		
 		glUniform4f(uniformLocation, 1.0f, 0.0f, 0.0f, 1.0f);		
-
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(6*sizeof(int)));
 
 		//draw 3rd obj
 
-		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);
-
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
+		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);		
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(12 * sizeof(int)));
 
 		//draw 4th obj
 
-		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);	
-
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
+		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);			
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(18 * sizeof(int)));
 
 		//draw 5th obj
 
-		glUniform4f(uniformLocation, 1.0f, 1.0f, 0.0f, 1.0f);
-		
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
+		glUniform4f(uniformLocation, 1.0f, 1.0f, 0.0f, 1.0f);		
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(24 * sizeof(int)));
 
@@ -256,79 +264,37 @@ int main() {
 
 		glUniform4f(uniformLocation, 0.0f, 1.0f, 0.0f, 1.0f);		
 
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(30 * sizeof(int)));
 
 		//draw 7th obj
 
-		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);			
-
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
+		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);				
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(36 * sizeof(int)));
 
 		//draw 8th obj
 
-		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);
-		
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
+		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);		
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(42 * sizeof(int)));
 
 		//draw 9th obj
 
-		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);
-
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
+		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);		
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(48 * sizeof(int)));
 
 
 		//draw 10th obj
 
-		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);
+		glUniform4f(uniformLocation, 0.0f, 1.0f, 1.0f, 1.0f);		
 
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices1),
-			indices1,
-			GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(54 * sizeof(int)));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(54 * sizeof(int)));		
+	
 
 		//clean up
+		
+
 		glDisableVertexAttribArray(0);
 
 		glUseProgram(0);

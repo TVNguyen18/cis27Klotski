@@ -53,7 +53,6 @@ int main() {
 	Shader* shader = nullptr;
 	unsigned int vao2;
 	VertexBuffer* vb2 = nullptr;
-	IndexBuffer* ib2 = nullptr;
 	VertexArray* va2 = nullptr;
 	VertexBufferLayout layout2;
 	Shader* shader2 = nullptr;
@@ -124,7 +123,7 @@ int main() {
 	va2->addBuffer(*vb2, layout2);
 
 	// generate buffer for square
-	ib2 = new IndexBuffer(indices, 6);
+	//ib2 = new IndexBuffer(indices, 6);
 
 	// generate shader
 	shader2 = new Shader("shader.shader");
@@ -136,7 +135,7 @@ int main() {
 	va2->unbind();
 	shader2->unbind();
 	vb2->unbind();
-	ib2->unbind();
+	//ib2->unbind();
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -144,17 +143,17 @@ int main() {
 
 		shader->bind();
 
-		shader->setUniform4F("uColor", r, 0.8, 0.9, 1.0);
+		shader->setUniform4F("uColor", r, 0.0, 0.5, 1.0);
 		//shader2->setUniform4F("uColor", 1.0, 1.0, 0.0, 1.0);
 
 		renderer.draw(*va, *ib, *shader);
 
 		shader2->bind();
 
-		shader2->setUniform4F("uColor", 1.0, 1.0, 0.0, 1.0);
+		shader2->setUniform4F("uColor", 0.2, 0.4, 0.5, 1.0);
 
 
-		renderer.draw(*va2, *ib2, *shader2);
+		renderer.draw(*va2, *ib, *shader2);
 
 		if (r > 1.0f)
 			increment = -0.05f;

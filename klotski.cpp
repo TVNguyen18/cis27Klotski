@@ -319,11 +319,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 	int imageWidth = 0;
 	int imageHeight = 0;
 	int objNumber;
-	unsigned char* image0 = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-
 	GLuint texture0[10];
 
+
 	glGenTextures(10, texture0);
+
+	unsigned char* image0 = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
 	glBindTexture(GL_TEXTURE_2D, texture0[0]);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

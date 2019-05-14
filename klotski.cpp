@@ -716,7 +716,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 
 		} else {
 
-			// draw	obj 0	
+			/*// draw	obj 0	
 
 			// activate texture
 			glActiveTexture(GL_TEXTURE0);
@@ -868,7 +868,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(108 * sizeof(int)));
-
+			*/
+            bindAndDrawTexture(texture0, shaderProgramID);
 		}
 
 

@@ -6,3 +6,7 @@
 #include <string>
 #include <sstream>
 #include <SOIL2/SOIL2.h>
+#include <GL/glut.h>
+#include "stack.h"
+#include "vertex.h"
+#include "draw.h"

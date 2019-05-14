@@ -320,39 +320,55 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 	int imageHeight = 0;
 	int objNumber;
 	GLuint texture0[10];
+	unsigned char* image[10];
+	int i;
 
+	/*image[0] = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[1] = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[2] = SOIL_load_image("../images/2_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[3] = SOIL_load_image("../images/3_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[4] = SOIL_load_image("../images/4_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[5] = SOIL_load_image("../images/logo.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[6] = SOIL_load_image("../images/undo_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[7] = SOIL_load_image("../images/reset_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[8] = SOIL_load_image("../images/exit_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	image[9] = SOIL_load_image("../images/exit_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+
+	for (i = 0; i < 10; i++) {
+		loadTexture(texture0, image[i], i, imageWidth, imageHeight);
+	}*/
 
 	glGenTextures(10, texture0);
 
-	unsigned char* image0 = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image0, 0, imageWidth, imageHeight);
+	unsigned char* green = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, green, 0, imageWidth, imageHeight);
 
-	unsigned char* image1 = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image1, 1, imageWidth, imageHeight);
+	unsigned char* red = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, red, 1, imageWidth, imageHeight);
 
-	unsigned char* image2 = SOIL_load_image("../images/2_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image2, 2, imageWidth, imageHeight);
+	unsigned char* yellow = SOIL_load_image("../images/2_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, yellow, 2, imageWidth, imageHeight);
 
-	unsigned char* image3 = SOIL_load_image("../images/3_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image3, 3, imageWidth, imageHeight);
+	unsigned char* blue = SOIL_load_image("../images/3_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, blue, 3, imageWidth, imageHeight);
 
-	unsigned char* image4 = SOIL_load_image("../images/4_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image4, 4, imageWidth, imageHeight);
+	unsigned char* background = SOIL_load_image("../images/4_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, background, 4, imageWidth, imageHeight);
 
-	unsigned char* image5 = SOIL_load_image("../images/logo.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image5, 5, imageWidth, imageHeight);
+	unsigned char* logo = SOIL_load_image("../images/logo.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, logo, 5, imageWidth, imageHeight);
 
-	unsigned char* image6 = SOIL_load_image("../images/undo_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image6, 6, imageWidth, imageHeight);
+	unsigned char* undoButton = SOIL_load_image("../images/undo_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, undoButton, 6, imageWidth, imageHeight);
 
-	unsigned char* image7 = SOIL_load_image("../images/reset_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image7, 7, imageWidth, imageHeight);
+	unsigned char* resetButton = SOIL_load_image("../images/reset_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, resetButton, 7, imageWidth, imageHeight);
 
-	unsigned char* image8 = SOIL_load_image("../images/exit_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image8, 8, imageWidth, imageHeight);
+	unsigned char* exitButton = SOIL_load_image("../images/exit_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, exitButton, 8, imageWidth, imageHeight);
 
-	unsigned char* image9 = SOIL_load_image("../images/exit_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, image9, 9, imageWidth, imageHeight);
+	unsigned char* exit = SOIL_load_image("../images/exit_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture0, exit, 9, imageWidth, imageHeight);
 
 
 	while (!glfwWindowShouldClose(window)) {

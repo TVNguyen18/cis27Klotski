@@ -1,3 +1,6 @@
+#ifndef INCLUDE_H
+#define INCLUDE_H
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -10,3 +13,6 @@
 #include "stack.h"
 #include "vertex.h"
 #include "draw.h"
+#include "shader.h"
+
+#endif

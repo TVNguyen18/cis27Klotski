@@ -75,7 +75,7 @@ int getCellNumber(int xpos, int ypos) {
 
 	if (xpos > 203 && xpos < 281 && ypos > -201 && ypos < -123)
 		return 19;
-
+	
 	if (xpos > -260 && xpos < -100 && ypos > -5 && ypos < 75) //undo
 		return 20;
 
@@ -86,7 +86,7 @@ int getCellNumber(int xpos, int ypos) {
 		return 22;
 
 	return 50;  // out of range
-
+	
 }
 
 void printVertexPos(glm::vec3 src) {
@@ -130,8 +130,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		cout << "\n" << currentXR << "," << currentYR;
 		currentXR -= 320;
 		currentYR = -currentYR + 240;
-		cout << " => " << currentXR << "," << currentYR;
-	}
+		cout << " => " << currentXR << "," << currentYR;		
+	}		
 }
 
 bool init();
@@ -147,12 +147,12 @@ glm::vec3 translate(glm::vec3, GLfloat, GLfloat, GLfloat);
 glm::vec3 scale(glm::vec3, GLfloat, GLfloat, GLfloat);
 glm::vec3 rotate(glm::vec3, GLfloat, GLfloat, GLfloat, GLfloat);
 
-//int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
-int main() {
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
+{
 	GLuint VAO;
 	GLuint VBO;
-	GLuint EBO;
-	int* posMatrix = new int[20]{
+	GLuint EBO;		
+	int* posMatrix = new int[20]{	
 		0, 1, 1, 2,
 		0, 1, 1, 2,
 		3, 4, 4, 5,
@@ -250,7 +250,7 @@ int main() {
 		// obj 18
 		76, 77, 78,
 		77, 78, 79,
-	};
+	};			
 
 	if (init() == false) {
 		return 1;
@@ -261,8 +261,8 @@ int main() {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	glGenBuffers(1, &VBO);
-
+	glGenBuffers(1, &VBO);	
+		
 	string vertexSrc = readShaderSource("../vertex_shader.shader");
 	string fragmentSrc = readShaderSource("../fragment_shader.shader");
 
@@ -281,13 +281,13 @@ int main() {
 	GLuint shaderProgramID = glCreateProgram();
 	glAttachShader(shaderProgramID, vertexShaderID);
 	glAttachShader(shaderProgramID, fragmentShaderID);
-	glLinkProgram(shaderProgramID);
+	glLinkProgram(shaderProgramID);	
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER,
 		sizeof(vertices),
 		&vertices[0],
-		GL_STATIC_DRAW);
+		GL_STATIC_DRAW);	
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -295,7 +295,7 @@ int main() {
 		sizeof(indices),
 		indices,
 		GL_STATIC_DRAW);
-
+	
 	// position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
 	glEnableVertexAttribArray(0);
@@ -312,64 +312,217 @@ int main() {
 	glBindVertexArray(0);
 
 
-
+	
 
 	// texture 1	
 
 	int imageWidth = 0;
 	int imageHeight = 0;
 	int objNumber;
+	unsigned char* image0 = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	
 	GLuint texture0[10];
-	int i;
 
 	glGenTextures(10, texture0);
+	glBindTexture(GL_TEXTURE_2D, texture0[0]);
 
-	unsigned char* green = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, green, 0, imageWidth, imageHeight);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	unsigned char* red = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, red, 1, imageWidth, imageHeight);
+	if (image0) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image0);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[0]);
+	SOIL_free_image_data(image0);
 
-	unsigned char* yellow = SOIL_load_image("../images/2_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, yellow, 2, imageWidth, imageHeight);
+	unsigned char* image1 = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[1]);
 
-	unsigned char* blue = SOIL_load_image("../images/3_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, blue, 3, imageWidth, imageHeight);
-
-	unsigned char* background = SOIL_load_image("../images/4_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, background, 4, imageWidth, imageHeight);
-
-	unsigned char* logo = SOIL_load_image("../images/logo.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, logo, 5, imageWidth, imageHeight);
-
-	unsigned char* undoButton = SOIL_load_image("../images/undo_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, undoButton, 6, imageWidth, imageHeight);
-
-	unsigned char* resetButton = SOIL_load_image("../images/reset_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, resetButton, 7, imageWidth, imageHeight);
-
-	unsigned char* exitButton = SOIL_load_image("../images/exit_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, exitButton, 8, imageWidth, imageHeight);
-
-	unsigned char* exit = SOIL_load_image("../images/exit_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, exit, 9, imageWidth, imageHeight);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image1) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image1);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[1]);
+	SOIL_free_image_data(image1);
 
 
+	unsigned char* image2 = SOIL_load_image("../images/2_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[2]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image2) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image2);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[2]);
+	SOIL_free_image_data(image2);
+
+	unsigned char* image3 = SOIL_load_image("../images/3_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[3]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image3) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image3);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[3]);
+	SOIL_free_image_data(image3);
+
+	unsigned char* image4 = SOIL_load_image("../images/4_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[4]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image4) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image4);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[4]);
+	SOIL_free_image_data(image4);
+
+	unsigned char* image5 = SOIL_load_image("../images/logo.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[5]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image5) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image5);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[5]);
+	SOIL_free_image_data(image5);
+
+
+
+	unsigned char* image6 = SOIL_load_image("../images/undo_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[6]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image6) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image6);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[6]);
+	SOIL_free_image_data(image6);
+
+	unsigned char* image7 = SOIL_load_image("../images/reset_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[7]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image7) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image7);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[7]);
+	SOIL_free_image_data(image7);
+
+	unsigned char* image8 = SOIL_load_image("../images/exit_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[8]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image8) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image8);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[8]);
+	SOIL_free_image_data(image8);
+
+	unsigned char* image9 = SOIL_load_image("../images/exit_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	glBindTexture(GL_TEXTURE_2D, texture0[9]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (image9) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image9);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "ERROR::TEXTURE_LOADING_FAIL!" << endl;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0[9]);
+	SOIL_free_image_data(image9);
+	
+	
 	while (!glfwWindowShouldClose(window)) {
 
 		// Update input
 		glfwPollEvents();
 
-		glfwSetMouseButtonCallback(window, mouse_button_callback);
+		glfwSetMouseButtonCallback(window, mouse_button_callback);	
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && initialFlag != -1) {
-
+			
 			int startCell = getCellNumber(currentX, currentY);
 			int endCell = getCellNumber(currentXR, currentYR);
 			int objNumber = getObjNumber(posMatrix, startCell);
 
 			//reset the flag
-			initialFlag = -1;
+			initialFlag = -1;		
 
 			if (objNumber == -1) // clicked on the empty cell
 			{
@@ -395,7 +548,7 @@ int main() {
 					cout << "\nstartCell updated to = " << startCell;
 					i = 20;
 				}
-			}
+			}			
 
 			switch (objNumber) // which kind of object selected
 			{
@@ -648,13 +801,13 @@ int main() {
 				// out of range
 				break;
 			}
-
+			
 			//update vertices
-			updateVertexAray(vertices, cellVertices, posMatrix);
+			updateVertexAray(vertices, cellVertices, posMatrix);			
 
 			if (objNumber < 20) {
 				cout << "\n\nNew Position of Object " << objNumber << " is: ";
-				printVertexPos(vertices[objNumber * 4].position);
+				printVertexPos(vertices[objNumber * 4].position);				
 			}
 			cout << "\nPosition Matrix updated = ";
 			for (int i = 0; i < 5; i++) {
@@ -670,22 +823,22 @@ int main() {
 				sizeof(vertices),
 				&vertices[0],
 				GL_STATIC_DRAW);
-
+			
 
 			//end testing
-
+			
 		}
-
+		
 
 		// clear
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);		
 
 		// use a program
-		glUseProgram(shaderProgramID);
+		glUseProgram(shaderProgramID);			
 
 		// bind VAO
-		glBindVertexArray(VAO);
+		glBindVertexArray(VAO);		
 		glEnableVertexAttribArray(0);
 
 		// set up uniform
@@ -697,15 +850,169 @@ int main() {
 			glBindTexture(GL_TEXTURE_2D, texture0[9]);
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(114 * sizeof(int)));
-
-		} else {
-            bindAndDrawTexture(texture0, shaderProgramID);
+			
 		}
+		else {		
 
+			// draw	obj 0	
+
+			// activate texture
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[0]);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+			//draw obj 1
+			glActiveTexture(1);
+			glBindTexture(GL_TEXTURE_2D, texture0[1]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(6 * sizeof(int)));
+
+			//draw obj 2
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[0]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(12 * sizeof(int)));
+
+
+			//draw obj 3
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[0]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(18 * sizeof(int)));
+
+			//draw obj 4
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[2]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(24 * sizeof(int)));
+
+			//draw obj 5
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[0]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(30 * sizeof(int)));
+
+			//draw obj 6
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[3]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(36 * sizeof(int)));
+
+			//draw obj 7
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[3]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(42 * sizeof(int)));
+
+			//draw obj 8
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[3]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(48 * sizeof(int)));
+
+			//draw obj 9
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[3]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(54 * sizeof(int)));
+
+			//draw obj 10
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[4]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(60 * sizeof(int)));
+
+			//draw obj 11
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[4]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(66 * sizeof(int)));
+
+			//draw obj 12
+			glActiveTexture(4);
+			glBindTexture(GL_TEXTURE_2D, texture0[4]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(72 * sizeof(int)));
+
+			//draw obj 13
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[4]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(78 * sizeof(int)));
+
+			//draw obj 14
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[4]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(84 * sizeof(int)));
+
+			//draw obj 15 - logo
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[5]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(90 * sizeof(int)));
+
+			//draw obj 16 - undo_button
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[6]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(96 * sizeof(int)));
+
+			//drawobj 17 - reset_button
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[7]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(102 * sizeof(int)));
+
+			//draw exit_button
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture0[8]);
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(108 * sizeof(int)));
+
+		}
+		
 
 
 		//clean up
-
+		
 
 		glDisableVertexAttribArray(0);
 
@@ -713,10 +1020,10 @@ int main() {
 
 		glfwSwapBuffers(window);
 		glFlush();
-
+		
 	}
 
-
+	
 	glfwTerminate();
 
 	return 0;
@@ -752,4 +1059,79 @@ void displayVersion() {
 	cout << "\nOpenGL Version: " << version
 		<< "\nOpenGL Renderer: " << renderer
 		<< "\nOpenGL Vendor: " << vendor << endl;
+}
+string readShaderSource(string fileName) {
+	fstream reader(fileName.c_str());
+	string line;
+	string code = "";
+	while (getline(reader, line)) {
+		code += line + "\n";
+	}
+	reader.close();
+	return code;
+}
+
+bool compileShader(GLuint shaderID) {
+	int result = -1;
+	int maxLengh = 2048;
+	int realLength = 0;
+	char errLog[2048];
+
+	cout << "Compiling shader " << shaderID << "..." << endl;
+	glCompileShader(shaderID);
+	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
+	if (result != GL_TRUE) {
+		cout << "Shader " << shaderID << "compiled fail!" << endl;
+		glGetShaderInfoLog(shaderID, maxLengh, &realLength, errLog);
+		cout << errLog << endl;
+		return false;
+	}
+	cout << "Shader " << shaderID << " compiled successful!" << endl;
+	return true;
+}
+
+glm::vec3 translate(glm::vec3 vertex, GLfloat x, GLfloat y, GLfloat z) {
+	glm::vec4 translatedVertex = glm::vec4(vertex, 1.0);
+	translatedVertex = translatedVertex * glm::mat4(1.0f, 0.0f, 0.0f, x,
+		0.0f, 1.0f, 0.0f, y,
+		0.0f, 0.0f, 1.0f, z,
+		0.0f, 0.0f, 0.0f, 1.0f);
+	return glm::vec3(translatedVertex[0], translatedVertex[1], translatedVertex[2]);
+}
+
+glm::vec3 scale(glm::vec3 vertex, GLfloat x, GLfloat y, GLfloat z) {
+	glm::vec4 scaledVertex = glm::vec4(vertex, 1.0);
+	scaledVertex = scaledVertex * glm::mat4(x, 0.0f, 0.0f, 0.0f,
+		0.0f, y, 0.0f, 0.0f,
+		0.0f, 0.0f, z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+	return glm::vec3(scaledVertex[0], scaledVertex[1], scaledVertex[2]);
+}
+
+glm::vec3 rotate(glm::vec3 vertex, GLfloat degree, GLfloat x, GLfloat y, GLfloat z) {
+	GLfloat radians = glm::radians(degree);
+	glm::vec4 rotatedVertex = glm::vec4(vertex, 1.0);
+
+	glm::mat4 rotateX = glm::mat4(1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, cos(radians), -sin(radians), 0.0f,
+		0.0f, sin(radians), cos(radians), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
+	glm::mat4 rotateY = glm::mat4(cos(radians), 0.0f, sin(radians), 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		-sin(radians), 0.0f, cos(radians), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
+	glm::mat4 rotateZ = glm::mat4(cos(radians), -sin(radians), 0.0f, 0.0f,
+		sin(radians), cos(radians), 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
+	if (x == 1.0f)
+		rotatedVertex = rotatedVertex * rotateX;
+	if (y == 1.0f)
+		rotatedVertex = rotatedVertex * rotateY;
+	if (z == 1.0f)
+		rotatedVertex = rotatedVertex * rotateZ;
+	return glm::vec3(rotatedVertex[0], rotatedVertex[1], rotatedVertex[2]);
 }

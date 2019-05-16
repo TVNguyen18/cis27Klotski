@@ -5,6 +5,8 @@
 #include "vertexArray.h"
 #include "shader.h"
 #include "renderer.h"
+#include "stack.h"
+#include "vertex.h"
 using namespace std;
 
 const int WIDTH = 640;

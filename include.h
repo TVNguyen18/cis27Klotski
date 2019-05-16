@@ -14,5 +14,6 @@
 #include "vertex.h"
 #include "draw.h"
 #include "shader.h"
+#include "init.h"
 
 #endif

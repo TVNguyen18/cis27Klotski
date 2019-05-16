@@ -19,6 +19,192 @@ double currentYR = 0;
 
 int initialFlag = 1;
 
+void movingObj(int* posMatrix, Vertex* vertices, Vertex* cellVertices, int startCell, int endCell) {
+	
+	int objSelected = *(posMatrix + startCell);
+	if (objSelected == -1) // clicked on the empty cell
+		return;
+	if (*(posMatrix + endCell) != -1) //endCell is not empty => do nothing
+		return;
+
+	// looking for the first cell which contains the objSelected
+	for(int i = 0; i < 20; i++)
+		if ((*posMatrix + i) == objSelected) {
+			startCell = i;
+			i = 20;
+		}
+	cout << "\nStartCell = " << startCell;	
+
+	switch (objSelected) // which kind of object selected
+	{
+	case 0:
+	case 2:
+	case 3:
+	case 5: //the green obj
+		if ((endCell == startCell + 1) || (endCell == startCell + 5)) //moving right
+		{
+			if (startCell % 4 == 3) return; // last column
+			if((startCell + 1 != -1) || (startCell + 5 != -1)) //destination cells are not empty
+				return;
+			//commit the move
+				//move 1st cell
+			*(vertices + startCell * 4) = *(cellVertices + (startCell + 1) * 4);
+			*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell + 1) * 4 + 1);
+			*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell + 1) * 4 + 2);
+			*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell + 1) * 4 + 3);
+				//move 2nd cell
+			*(vertices + (startCell + 4) * 4) = *(cellVertices + (startCell + 5) * 4);
+			*(vertices + (startCell + 4) * 4 + 1) = *(cellVertices + (startCell + 5) * 4 + 1);
+			*(vertices + (startCell + 4) * 4 + 2) = *(cellVertices + (startCell + 5) * 4 + 2);
+			*(vertices + (startCell + 4) * 4 + 3) = *(cellVertices + (startCell + 5) * 4 + 3);
+			
+			//update posMatrix
+			*(posMatrix + startCell) = *(posMatrix + startCell + 4) = -1;
+			*(posMatrix + startCell + 1) = *(posMatrix + startCell + 5) = objSelected;
+			return;
+		}
+		if ((endCell == startCell - 1) || (endCell == startCell + 3)) //moving left
+		{
+			if (startCell % 4 == 0) return; // first column
+			if ((startCell - 1 != -1) || (startCell + 3 != -1)) //destination cells are not empty
+				return;
+				//commit the move
+					//move 1st cell
+				*(vertices + startCell * 4) = *(cellVertices + (startCell - 1) * 4);
+				*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell - 1) * 4 + 1);
+				*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell - 1) * 4 + 2);
+				*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell - 1) * 4 + 3);
+				//move 2nd cell
+				*(vertices + (startCell + 4) * 4) = *(cellVertices + (startCell + 3) * 4);
+				*(vertices + (startCell + 4) * 4 + 1) = *(cellVertices + (startCell + 3) * 4 + 1);
+				*(vertices + (startCell + 4) * 4 + 2) = *(cellVertices + (startCell + 3) * 4 + 2);
+				*(vertices + (startCell + 4) * 4 + 3) = *(cellVertices + (startCell + 3) * 4 + 3);
+				//update posMatrix
+				*(posMatrix + startCell) = *(posMatrix + startCell + 4) = -1;
+				*(posMatrix + startCell - 1) = *(posMatrix + startCell + 3) = objSelected;
+			return;
+		}
+		if ((endCell == startCell - 4) || (endCell == startCell - 8)) //moving up
+		{
+			if (startCell < 4) return; // first row
+			if ((startCell - 4 != -1) || (startCell - 8 != -1)) //destination cells are not empty
+				return;
+				//commit the move
+					//move 1st cell
+				*(vertices + startCell * 4) = *(cellVertices + (startCell - 8) * 4);
+				*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell - 8) * 4 + 1);
+				*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell - 8) * 4 + 2);
+				*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell - 8) * 4 + 3);
+				//move 2nd cell
+				*(vertices + (startCell + 4) * 4) = *(cellVertices + (startCell - 4) * 4);
+				*(vertices + (startCell + 4) * 4 + 1) = *(cellVertices + (startCell - 4) * 4 + 1);
+				*(vertices + (startCell + 4) * 4 + 2) = *(cellVertices + (startCell - 4) * 4 + 2);
+				*(vertices + (startCell + 4) * 4 + 3) = *(cellVertices + (startCell - 4) * 4 + 3);
+				//update posMatrix
+				*(posMatrix + startCell) = *(posMatrix + startCell + 4) = -1;
+				*(posMatrix + startCell - 4) = *(posMatrix + startCell - 8) = objSelected;
+			return;
+		}
+		if ((endCell == startCell + 8) || (endCell == startCell + 12)) //moving down
+		{
+			if (startCell > 15) return; // last row
+			if ((startCell + 8 != -1) || (startCell + 12 != -1)) //destination cells are not empty
+				return;
+			//commit the move
+				//move 1st cell
+			*(vertices + startCell * 4) = *(cellVertices + (startCell + 8) * 4);
+			*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell + 8) * 4 + 1);
+			*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell + 8) * 4 + 2);
+			*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell + 8) * 4 + 3);
+			//move 2nd cell
+			*(vertices + (startCell + 4) * 4) = *(cellVertices + (startCell + 12) * 4);
+			*(vertices + (startCell + 4) * 4 + 1) = *(cellVertices + (startCell + 12) * 4 + 1);
+			*(vertices + (startCell + 4) * 4 + 2) = *(cellVertices + (startCell + 12) * 4 + 2);
+			*(vertices + (startCell + 4) * 4 + 3) = *(cellVertices + (startCell + 12) * 4 + 3);
+			//update posMatrix
+			*(posMatrix + startCell) = *(posMatrix + startCell + 4) = -1;
+			*(posMatrix + startCell + 8) = *(posMatrix + startCell + 12) = objSelected;
+			return;
+		}
+		break;
+	case 6: // blue obj
+	case 7:
+	case 8:
+	case 9:
+		cout << "\nCase 6, 7, 8, 9";
+		if (endCell == startCell + 1) //moving right
+		{
+			if (startCell % 4 == 3) return; // last column
+			if (startCell + 1 != -1) //destination cells are not empty
+				return;
+			//commit the move
+				//move 1st cell
+			*(vertices + startCell * 4) = *(cellVertices + (startCell + 1) * 4);
+			*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell + 1) * 4 + 1);
+			*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell + 1) * 4 + 2);
+			*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell + 1) * 4 + 3);			
+
+			//update posMatrix
+			*(posMatrix + startCell) = -1;
+			*(posMatrix + startCell + 1) = objSelected;
+			return;
+		}
+		if (endCell == startCell - 1) //moving left
+		{
+			if (startCell % 4 == 0) return; // first column
+			if (startCell - 1 != -1)  //destination cells are not empty
+				return;
+			//commit the move
+				//move 1st cell
+			*(vertices + startCell * 4) = *(cellVertices + (startCell - 1) * 4);
+			*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell - 1) * 4 + 1);
+			*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell - 1) * 4 + 2);
+			*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell - 1) * 4 + 3);
+			
+			//update posMatrix
+			*(posMatrix + startCell) = -1;
+			*(posMatrix + startCell - 1) = objSelected;
+			return;
+		}
+		if (endCell == startCell - 4)  //moving up
+		{
+			if (startCell < 4) return; // first row
+			if (startCell - 4 != -1) //destination cells are not empty
+				return;
+			//commit the move
+				//move 1st cell
+			*(vertices + startCell * 4) = *(cellVertices + (startCell - 8) * 4);
+			*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell - 4) * 4 + 1);
+			*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell - 4) * 4 + 2);
+			*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell - 4) * 4 + 3);
+			
+			//update posMatrix
+			*(posMatrix + startCell) = -1;
+			*(posMatrix + startCell - 4) = objSelected;
+			return;
+		}
+		if (endCell == startCell + 4) //moving down
+		{
+			if (startCell > 15) return; // last row
+			if (startCell + 8 != -1) //destination cells are not empty
+				return;
+			//commit the move
+				//move 1st cell
+			*(vertices + startCell * 4) = *(cellVertices + (startCell + 4) * 4);
+			*(vertices + startCell * 4 + 1) = *(cellVertices + (startCell + 4) * 4 + 1);
+			*(vertices + startCell * 4 + 2) = *(cellVertices + (startCell + 4) * 4 + 2);
+			*(vertices + startCell * 4 + 3) = *(cellVertices + (startCell + 4) * 4 + 3);
+			
+			//update posMatrix
+			*(posMatrix + startCell) = -1;
+			*(posMatrix + startCell + 4) = objSelected;
+			return;
+		}
+		break;
+	default:
+		break;
+	}
+}
 
 int getCellNumber(int xpos, int ypos) {
 	if (xpos > 41 && xpos < 119 && ypos> -120 && ypos < -42)
@@ -36,65 +222,7 @@ int getCellNumber(int xpos, int ypos) {
 		return 19;
 	
 }
-/*
-int isBelongTo(int xpos, int ypos, int cellNumber) {
-	switch (cellNumber) {
-	case 0:
 
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	case 4:
-		break;
-	case 5:
-		break;
-	case 6:
-		break;
-	case 7:
-		break;
-	case 8:
-		break;
-	case 9:
-		break;
-	case 10:
-		break;
-	case 11:
-		break;
-	case 12:
-		break;
-	case 13:
-		break;
-	case 14:
-		break;
-	case 15:
-		break;
-	case 16:
-		if (xpos > -41 && xpos < 37 && ypos> -201 && ypos < -123)
-			return 1;
-		break;
-	case 17:
-		if (xpos > 41 && xpos < 119 && ypos > -201 && ypos < -123)
-			return 1;
-		break;
-	case 18:
-		if (xpos > 121 && xpos < 199 && ypos > -199 && ypos < -121)
-			return 1;
-		break;
-	case 19:
-
-		break;
-	case 20:
-		break;
-	default:
-		break;
-	}
-	return 0;
-}
-*/
 void printVertexPos(glm::vec3 src) {
 	cout << src.s << " , " << src.t;
 }
@@ -102,6 +230,7 @@ void printVertexPos(glm::vec3 src) {
 int getObjNumber(int* posMatrix, int cellNumber) {
 	return *(posMatrix + cellNumber);
 }
+
 
 
 int getMovingDirection(int startCell, int endCell) {
@@ -194,131 +323,299 @@ int main() {
 		3, 6, 7, 5,
 		8, -1, -1, 9
 	};
-	Vertex cellVertices[] = {
-		//0
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	Vertex* cellVertices = new Vertex[14 * 4];
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.131f, 0.508f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.119f, 0.508f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(0.128f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.128f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.372f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.372f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(0.378f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.378f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.622f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.622f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(0.244f, 0.508f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.344f, 0.442f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.444f, 0.375f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.544f, 0.308f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(-0.128f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(-0.128f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.116f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.116f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(0.128f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.128f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.372f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.372f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(0.378f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.378f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.622f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.622f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+	*(cellVertices) = { glm::vec3(0.634f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.634f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+	*(cellVertices) = { glm::vec3(0.878f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+	*(cellVertices) = { glm::vec3(0.878f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+
+	/*
+		{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//1
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//2
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//3
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//4
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//5
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//6
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//7
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//8
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//9
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//10
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//11
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//12
-		glm::vec3(0.128f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.128f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.372f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.372f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(0.128f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(0.128f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.372f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.372f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 
 		//13
-		glm::vec3(0.128f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.128f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.372f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.372f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(0.128f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(0.128f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.372f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.372f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 
 		//14
-		glm::vec3(0.378f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.378f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.622f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.622f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(0.378f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(0.378f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.622f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.622f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 
 		//15
-		glm::vec3(0.458f, 0.365f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.503f, 0.336f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.547f, 0.306f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.591f, 0.277f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{glm::vec3(0.458f, 0.365f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(0.503f, 0.336f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.547f, 0.306f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(0.591f, 0.277f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 
 		//16
-		glm::vec3(-0.128f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.128f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.116f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.116f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+		{glm::vec3(-0.128f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f)},
+	{ glm::vec3(-0.128f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f) },
+	{ glm::vec3(0.116f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f) },
+	{ glm::vec3(0.116f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f) },
 
 		//17
-		glm::vec3(0.128f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.128f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.372f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.372f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{ glm::vec3(0.128f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f) },
+	{ glm::vec3(0.128f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f) },
+	{ glm::vec3(0.372f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f) },
+	{ glm::vec3(0.372f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f) },
 
-		glm::vec3(0.378f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.378f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.622f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.622f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{ glm::vec3(0.378f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f) },
+	{ glm::vec3(0.378f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f) },
+	{ glm::vec3(0.622f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f) },
+	{ glm::vec3(0.622f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f) },
 
-		glm::vec3(0.634f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.634f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.878f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.878f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
+	{ glm::vec3(0.634f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f) },
+	{ glm::vec3(0.634f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f) },
+	{ glm::vec3(0.878f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f) },
+	{ glm::vec3(0.878f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f) }
 
 	};
+	*/
+Vertex* vertices = new Vertex[20 * 4];
+*(vertices) = { glm::vec3(-0.131f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.131f, 0.175f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.119f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.119f, 0.175f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
 
-	Vertex vertices[] = {
+*(vertices) = { glm::vec3(0.125f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.125f, 0.175f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.625f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.625f, 0.175f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(0.631f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.631f, 0.175f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.881f, 0.842f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.881f, 0.175f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(-0.131f, 0.167f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.131f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.119f, 0.167f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.119f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(0.125f, 0.167f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.125f, -0.167f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.625f, 0.167f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.625f, -0.167f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(0.631f, 0.167f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.631f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.881f, 0.167f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.881f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(0.128f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.128f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.372f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.372f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(0.378f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.378f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.622f, -0.175f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.622f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(-0.128f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.128f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.116f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.116f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(0.634f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.634f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(0.878f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(0.878f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(-0.844f, 0.833f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.844f, 0.333f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(-0.281f, 0.833f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.281f, 0.333f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(-0.813f, 0.313f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.813f, -0.021f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(-0.313f, 0.313f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.313f, -0.021f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(-0.813f, -0.083f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.813f, -0.417f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(-0.313f, -0.083f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.313f, -0.417f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+*(vertices) = { glm::vec3(-0.813f, -0.479f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.813f, -0.813f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f), };
+*(vertices) = { glm::vec3(-0.313f, -0.479f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), };
+*(vertices) = { glm::vec3(-0.313f, -0.813f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f), };
+
+
+/*
+{
 		//obj0
 		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.131f, 0.175f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
@@ -390,7 +687,8 @@ int main() {
 		glm::vec3(-0.313f, -0.479f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(-0.313f, -0.813f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
 	};
-	unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
+	*/
+	
 	GLuint indices[] = {
 		// obj 1
 		0, 1, 2,
@@ -482,8 +780,8 @@ int main() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER,
-		sizeof(vertices),
-		&vertices[0],
+		56 * sizeof(Vertex),
+		vertices,
 		GL_STATIC_DRAW);	
 
 	glGenBuffers(1, &EBO);
@@ -678,8 +976,8 @@ int main() {
 			int startCell = getCellNumber(currentX, currentY);
 			int endCell = getCellNumber(currentXR, currentYR);
 			int objNumber = getObjNumber(posMatrix, startCell);
-			
-			
+			movingObj(posMatrix, vertices, cellVertices, startCell, endCell);
+			/*
 			if(canMove(posMatrix, startCell, endCell))
 			{				
 				int movDirection = getMovingDirection(startCell, endCell);
@@ -737,6 +1035,7 @@ int main() {
 				}
 
 			}
+			*/
 		}
 		
 		

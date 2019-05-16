@@ -11,11 +11,109 @@ const int WIDTH = 640;
 const int HEIGHT = 480;
 GLFWwindow* window;
 
+double currentX;
+double currentY;
+
+double currentXR;
+double currentYR;
+
+int initialFlag = 1;
+
+int getCellNumber(int xpos, int ypos) {
+
+	if (xpos > -41 && xpos < 37 && ypos> -201 && ypos < -123)
+		return 16;
+	if (xpos > 41 && xpos < 119 && ypos > -201 && ypos < -123)
+		return 17;
+	if (xpos > 121 && xpos < 199 && ypos> -201 && ypos < -123)
+		return 18;
+	if (xpos > 281 && xpos < 203 && ypos > -201 && ypos < -123)
+		return 19;
+}
+
+int isBelongTo(int xpos, int ypos, int cellNumber) {
+	switch (cellNumber) {
+	case 0:
+		
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+		break;
+	case 6:
+		break;
+	case 7:
+		break;
+	case 8:
+		break;
+	case 9:
+		break;
+	case 10:
+		break;
+	case 11:
+		break;
+	case 12:
+		break;
+	case 13:
+		break;
+	case 14:
+		break;
+	case 15:
+		break;
+	case 16:
+		if (xpos > -41 && xpos < 37 && ypos> -201 && ypos < -123)
+			return 1;
+		break;
+	case 17:
+		if (xpos > 41 && xpos < 119 && ypos > -201 && ypos < -123)
+			return 1;
+		break;
+	case 18:
+		if (xpos > 121 && xpos < 199 && ypos > -199 && ypos < -121)
+			return 1;
+		break;
+	case 19:
+		break;
+	case 20:
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		cout << "\nLeft click!";
+		glfwGetCursorPos(window, &currentX, &currentY);
+		cout << "\n" << currentX << "," << currentY;
+		currentX -= 320;
+		currentY = -currentY + 240;
+		cout << " => " << currentX << "," << currentY;
+	}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+		cout << "\nLeft release!";
+		glfwGetCursorPos(window, &currentXR, &currentYR);
+		cout << "\n" << currentXR << "," << currentYR;
+		currentXR -= 320;
+		currentYR = -currentYR + 240;
+		cout << " => " << currentXR << "," << currentYR;
+	}		
+}
+
 bool init();
 void displayVersion();
 
 string readShaderSource(string);
 bool compileShader(GLuint);
+
 
 int uniformLocation;
 
@@ -375,11 +473,59 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, texture0[7]);
 	SOIL_free_image_data(image7);
 	
-
+	
 	while (!glfwWindowShouldClose(window)) {
 
 		// Update input
 		glfwPollEvents();
+
+		glfwSetMouseButtonCallback(window, mouse_button_callback);	
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+			
+			//if (currentX > -41 && currentX < 37 && currentY> -201 && currentY < -123)
+			if(isBelongTo(currentX, currentY, 16))
+			{
+
+				if (isBelongTo(currentXR, currentYR, 17))
+				{
+					vertices[32] = { glm::vec3(0.128f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+					vertices[33] = { glm::vec3(0.128f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+					vertices[34] = { glm::vec3(0.372f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+					vertices[35] = { glm::vec3(0.372f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+					glBindBuffer(GL_ARRAY_BUFFER, VBO);
+					glBufferData(GL_ARRAY_BUFFER,
+						sizeof(vertices),
+						&vertices[0],
+						GL_STATIC_DRAW);
+				}
+
+			}
+			if (isBelongTo(currentX, currentY, 17))
+			{
+
+				if (isBelongTo(currentXR, currentYR, 18))
+				{
+					vertices[32] = { glm::vec3(0.378f, -0.504f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+					vertices[33] = { glm::vec3(0.378f, -0.829f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+					vertices[34] = { glm::vec3(0.622f, -0.504f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+					vertices[35] = { glm::vec3(0.622f, -0.829f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+					
+					glBindBuffer(GL_ARRAY_BUFFER, VBO);
+					glBufferData(GL_ARRAY_BUFFER,
+						sizeof(vertices),
+						&vertices[0],
+						GL_STATIC_DRAW);
+						
+				}
+
+			}
+		}
+		
+		
+	
+		
 
 		// clear
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -521,10 +667,15 @@ int main() {
 		
 	}
 
+	
 	glfwTerminate();
 
 	return 0;
 }
+
+
+
+
 
 bool init() {
 	if (glfwInit() == false) {

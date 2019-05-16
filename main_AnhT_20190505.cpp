@@ -80,7 +80,6 @@ int getCellNumber(int xpos, int ypos) {
 
 	if (xpos > 203 && xpos < 281 && ypos > -201 && ypos < -123)
 		return 19;
-	return 0;  // avoid unexpected error
 	
 }
 
@@ -114,7 +113,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		currentX -= 320;
 		currentY = -currentY + 240;
 		cout << " => " << currentX << "," << currentY;
-		initialFlag = 1;
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
 		cout << "\nLeft release!";
@@ -122,7 +120,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		cout << "\n" << currentXR << "," << currentYR;
 		currentXR -= 320;
 		currentYR = -currentYR + 240;
-		cout << " => " << currentXR << "," << currentYR;		
+		cout << " => " << currentXR << "," << currentYR;
+		initialFlag = 1;
 	}		
 }
 
@@ -151,8 +150,6 @@ int main() {
 		3, 6, 7, 5,
 		8, -1, -1, 9
 	};
-
-/*
 	Vertex cellVertices[] = {
 		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
 glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
@@ -359,12 +356,6 @@ glm::vec3(-0.313f, -0.479f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 
 glm::vec3(-0.313f, -0.813f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
 
 	};
-
-*/
-Vertex vertices[19 * 4];
-Vertex cellVertices[20 * 4];
-initVertexAry(vertices);
-initCellVertexAry(cellVertices);
 	unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 	GLuint indices[] = {
 		// obj 0
@@ -706,7 +697,7 @@ initCellVertexAry(cellVertices);
 
 			if (objNumber == -1) // clicked on the empty cell
 			{
-				//  do something				
+				//  do something
 			}
 				
 			if (*(posMatrix + endCell) != -1) //endCell is not empty => do nothing
@@ -731,7 +722,7 @@ initCellVertexAry(cellVertices);
 			switch (objNumber) // which kind of object selected
 			{
 			case 1: //the red
-				cout << "\nRed object Selected!";
+				cout << "\Red object Selected!";
 				if (endCell == startCell + 2 || endCell == startCell + 6) //moving right
 				{
 					if (startCell % 4 == 2) break; // last column
@@ -824,7 +815,7 @@ initCellVertexAry(cellVertices);
 				}
 				break;
 			case 4: //the yellow
-				cout << "\nYellow object Selected!";
+				cout << "\Yellow object Selected!";
 				if (endCell == startCell + 2) //moving right
 				{
 					if (startCell % 4 == 2) break; // last column

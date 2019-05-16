@@ -2,8 +2,9 @@
 #define INIT_H
 
 #include "include.h"
+//#include "klotski.h"
 
-bool init(GLFWwindow** window, int WIDTH, int HEIGHT);
+bool init(void);
 
 void displayVersion(void);
 #endif

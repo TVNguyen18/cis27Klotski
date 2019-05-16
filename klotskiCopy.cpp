@@ -699,7 +699,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(114 * sizeof(int)));
 
 		} else {
-            bindAndDrawTexture(texture0, shaderProgramID);
+			bindAndDrawTexture(texture0, shaderProgramID);
 		}
 
 

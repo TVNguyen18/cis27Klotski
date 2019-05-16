@@ -5,6 +5,7 @@
 
 using namespace std;
 
+#include "include.h"
 #include <glm/glm.hpp>
 
 #include "stack.h"
@@ -378,4 +379,51 @@ void printVertexAry(Vertex myVertexAry[]) {
 		for (int j = 0; j < 4; j++) {
 			cout << "\nVertex " << i * 4 + j << " = " << myVertexAry[i * 4 + j].position.s;
 		}		
+}
+
+
+glm::vec3 translate(glm::vec3 vertex, GLfloat x, GLfloat y, GLfloat z) {
+	glm::vec4 translatedVertex = glm::vec4(vertex, 1.0);
+	translatedVertex = translatedVertex * glm::mat4(1.0f, 0.0f, 0.0f, x,
+		0.0f, 1.0f, 0.0f, y,
+		0.0f, 0.0f, 1.0f, z,
+		0.0f, 0.0f, 0.0f, 1.0f);
+	return glm::vec3(translatedVertex[0], translatedVertex[1], translatedVertex[2]);
+}
+
+glm::vec3 scale(glm::vec3 vertex, GLfloat x, GLfloat y, GLfloat z) {
+	glm::vec4 scaledVertex = glm::vec4(vertex, 1.0);
+	scaledVertex = scaledVertex * glm::mat4(x, 0.0f, 0.0f, 0.0f,
+		0.0f, y, 0.0f, 0.0f,
+		0.0f, 0.0f, z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+	return glm::vec3(scaledVertex[0], scaledVertex[1], scaledVertex[2]);
+}
+
+glm::vec3 rotate(glm::vec3 vertex, GLfloat degree, GLfloat x, GLfloat y, GLfloat z) {
+	GLfloat radians = glm::radians(degree);
+	glm::vec4 rotatedVertex = glm::vec4(vertex, 1.0);
+
+	glm::mat4 rotateX = glm::mat4(1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, cos(radians), -sin(radians), 0.0f,
+		0.0f, sin(radians), cos(radians), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
+	glm::mat4 rotateY = glm::mat4(cos(radians), 0.0f, sin(radians), 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		-sin(radians), 0.0f, cos(radians), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
+	glm::mat4 rotateZ = glm::mat4(cos(radians), -sin(radians), 0.0f, 0.0f,
+		sin(radians), cos(radians), 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
+	if (x == 1.0f)
+		rotatedVertex = rotatedVertex * rotateX;
+	if (y == 1.0f)
+		rotatedVertex = rotatedVertex * rotateY;
+	if (z == 1.0f)
+		rotatedVertex = rotatedVertex * rotateZ;
+	return glm::vec3(rotatedVertex[0], rotatedVertex[1], rotatedVertex[2]);
 }

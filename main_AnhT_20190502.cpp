@@ -11,36 +11,25 @@ const int WIDTH = 640;
 const int HEIGHT = 480;
 GLFWwindow* window;
 
-double currentX = -1;
-double currentY = 0;
+double currentX;
+double currentY;
 
-double currentXR = 0;
-double currentYR = 0;
+double currentXR;
+double currentYR;
 
 int initialFlag = 1;
 
-
 int getCellNumber(int xpos, int ypos) {
-	if (xpos > 41 && xpos < 119 && ypos> -120 && ypos < -42)
-		return 13;
-	if (xpos > 121 && xpos < 199 && ypos > -120 && ypos < -42)
-		return 14;
-
 	if (xpos > -41 && xpos < 37 && ypos> -201 && ypos < -123)
 		return 16;
 	if (xpos > 41 && xpos < 119 && ypos > -201 && ypos < -123)
 		return 17;
-	if (xpos > 121 && xpos < 199 && ypos > -199 && ypos < -121)
-		return 18;
-	if (xpos > 203 && xpos < 281 && ypos > -199 && ypos < -121)
-		return 19;
-	
 }
-/*
+
 int isBelongTo(int xpos, int ypos, int cellNumber) {
 	switch (cellNumber) {
 	case 0:
-
+		
 		break;
 	case 1:
 		break;
@@ -85,7 +74,6 @@ int isBelongTo(int xpos, int ypos, int cellNumber) {
 			return 1;
 		break;
 	case 19:
-
 		break;
 	case 20:
 		break;
@@ -94,61 +82,7 @@ int isBelongTo(int xpos, int ypos, int cellNumber) {
 	}
 	return 0;
 }
-*/
-void printVertexPos(glm::vec3 src) {
-	cout << src.s << " , " << src.t;
-}
 
-int getObjNumber(int* posMatrix, int cellNumber) {
-	return *(posMatrix + cellNumber);
-}
-
-
-int getMovingDirection(int startCell, int endCell) {
-	if (endCell == startCell + 1)
-		return 6; //moving to the right
-	if (endCell == startCell - 1)
-		return 4; //moving to the left
-	if (endCell == startCell - 4)
-		return 8; //moving up
-	if (endCell == startCell + 4)
-		return 2; //moving down
-	return 0; //moving out of range
-}
-int canMove(int* posMatrix, int startCell, int endCell) {
-	int movDirection = getMovingDirection(startCell, endCell);
-	if (movDirection == 0)
-		return 0;
-	if (getObjNumber(posMatrix, endCell) != -1) // end cell is not empty
-		return 0;
-	
-	for (int i = 0; i < 5; i++)
-		for (int j = 0; j < 4; j++) {
-			if ((i * 4 + j) == startCell) {
-				switch (movDirection) {
-				case 2: //move down
-					if (i == 4) return 0;	//last row				
-					return 1;
-					break;
-
-				case 4: //moving to the left
-					if (j == 0) return 0; //fisrt column
-					return 1;					
-					break;
-
-				case 6: //moving to the right
-					if (j == 3) return 0; //last column
-					return 1;					
-					break;
-				
-				case 8: //move up
-					if (i == 0) return 0; //first row
-					return 1;
-					break;				
-				}
-			}
-		}
-}
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
@@ -187,204 +121,73 @@ int main() {
 	GLuint VAO;
 	GLuint VBO;
 	GLuint EBO;		
-	int* posMatrix = new int[20]{	
-		0, 1, 1, 2,
-		0, 1, 1, 2,
-		3, 4, 4, 5,
-		3, 6, 7, 5,
-		8, -1, -1, 9
-	};
-	Vertex cellVertices[] = {
-		//0
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//1
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//2
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//3
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//4
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//5
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//6
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//7
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//8
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//9
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//10
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//11
-		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.131f, 0.508f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.119f, 0.508f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//12
-		glm::vec3(0.128f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.128f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.372f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.372f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-
-		//13
-		glm::vec3(0.128f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.128f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.372f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.372f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-
-		//14
-		glm::vec3(0.378f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.378f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.622f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.622f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-
-		//15
-		glm::vec3(0.458f, 0.365f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.503f, 0.336f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.547f, 0.306f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.591f, 0.277f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//16
-		glm::vec3(-0.128f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(-0.128f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.116f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.116f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		//17
-		glm::vec3(0.128f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.128f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.372f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.372f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		glm::vec3(0.378f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.378f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.622f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.622f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-		glm::vec3(0.634f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),	glm::vec2(0.0f, 1.0f),
-		glm::vec3(0.634f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
-		glm::vec3(0.878f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
-		glm::vec3(0.878f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-
-	};
 
 	Vertex vertices[] = {
-		//obj0
 		glm::vec3(-0.131f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.131f, 0.175f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.119f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.119f, 0.175f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj1
+		
 		glm::vec3(0.125f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(0.125f, 0.175f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.625f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.625f, 0.175f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj2
+		
 		glm::vec3(0.631f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(0.631f, 0.175f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.881f, 0.842f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.881f, 0.175f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj3
+		
 		glm::vec3(-0.131f, 0.167f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.131f, -0.5f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.119f, 0.167f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.119f, -0.5f, 0.0f),		glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj4
+		
 		glm::vec3(0.125f, 0.167f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(0.125f, -0.167f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.625f, 0.167f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.625f, -0.167f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj5
+		
 		glm::vec3(0.631f, 0.167f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(0.631f, -0.5f, 0.0f),		glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.881f, 0.167f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.881f, -0.5f, 0.0f),		glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj6
+		
 		glm::vec3(0.128f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(0.128f, -0.5f, 0.0f),		glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.372f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.372f, -0.5f, 0.0f),		glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj7
+		
 		glm::vec3(0.378f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(0.378f, -0.5f, 0.0f),		glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.622f, -0.175f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.622f, -0.5f, 0.0f),		glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj8
+		
 		glm::vec3(-0.128f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.128f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.116f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.116f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj9
+		
 		glm::vec3(0.634f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(0.634f, -0.838f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(0.878f, -0.513f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(0.878f, -0.838f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj10 - logo
+
 		glm::vec3(-0.844f, 0.833f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.844f, 0.333f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(-0.281f, 0.833f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(-0.281f, 0.333f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj11 - undo
+
 		glm::vec3(-0.813f, 0.313f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.813f, -0.021f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(-0.313f, 0.313f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(-0.313f, -0.021f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj12 - reset
+
 		glm::vec3(-0.813f, -0.083f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.813f, -0.417f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(-0.313f, -0.083f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
 		glm::vec3(-0.313f, -0.417f, 0.0f),	glm::vec3(1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f),
-		//obj13 - exit
+
 		glm::vec3(-0.813f, -0.479f, 0.0f),	glm::vec3(1.0f, 0.0f, 0.0),		glm::vec2(0.0f, 1.0f),
 		glm::vec3(-0.813f, -0.813f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f),
 		glm::vec3(-0.313f, -0.479f, 0.0f),	glm::vec3(1.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f),
@@ -673,67 +476,43 @@ int main() {
 
 		glfwSetMouseButtonCallback(window, mouse_button_callback);	
 
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && currentX != -1) {
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
 			
-			int startCell = getCellNumber(currentX, currentY);
-			int endCell = getCellNumber(currentXR, currentYR);
-			int objNumber = getObjNumber(posMatrix, startCell);
-			
-			
-			if(canMove(posMatrix, startCell, endCell))
-			{				
-				int movDirection = getMovingDirection(startCell, endCell);
-				cout << "\n\nStartCell = " << startCell
-					<< "\nEndCell = " << endCell
-					<< "\nObject Selected = " << objNumber;
-				switch (movDirection) {
-				case 2:
-					cout << "\nMoving direction: down";
-					break;
-				case 4:
-					cout << "\nMoving direction: left";
-					break;
-				case 6:
-					cout << "\nMoving direction: right";
-					break;
-				case 8:
-					cout << "\nMoving direction: up";
-					break;
-				default:
-					cout << "\nMoving out of range";
-					break;
+			//if (currentX > -41 && currentX < 37 && currentY> -201 && currentY < -123)
+			if(isBelongTo(currentX, currentY, 16))
+			{
+
+				if (isBelongTo(currentXR, currentYR, 17))
+				{
+					vertices[32] = { glm::vec3(0.128f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+					vertices[33] = { glm::vec3(0.128f, -0.838f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+					vertices[34] = { glm::vec3(0.372f, -0.513f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+					vertices[35] = { glm::vec3(0.372f, -0.838f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+
+					glBindBuffer(GL_ARRAY_BUFFER, VBO);
+					glBufferData(GL_ARRAY_BUFFER,
+						sizeof(vertices),
+						&vertices[0],
+						GL_STATIC_DRAW);
 				}
-				//move object to a new position
-				cout << "\n\nOld Position of Object " << objNumber << " is: ";
-				printVertexPos(vertices[objNumber * 4].position);
-				cout << "\n\nNew Position of Object " << objNumber << " is: ";
-				printVertexPos(cellVertices[endCell * 4].position);
-	
-				vertices[objNumber * 4] = cellVertices[endCell * 4];
-				vertices[objNumber * 4 + 1] = cellVertices[endCell * 4 + 1];
-				vertices[objNumber * 4 + 2] = cellVertices[endCell * 4 + 2];
-				vertices[objNumber * 4 + 3] = cellVertices[endCell * 4 + 3];
 
-				//update vertex buffer
-				glBindBuffer(GL_ARRAY_BUFFER, VBO);
-				glBufferData(GL_ARRAY_BUFFER,
-					sizeof(vertices),
-					&vertices[0],
-					GL_STATIC_DRAW);
+			}
+			if (isBelongTo(currentX, currentY, 17))
+			{
 
-				//update position matrix
-				// set 0 for the empty cell
-				for (int i = 0; i < 20; i++)
-					if (*(posMatrix + i) == objNumber)
-						*(posMatrix + i) = -1;
-				// set objNumber for endCell							
-				*(posMatrix + endCell) = objNumber;
-
-				for (int i = 0; i < 5; i++) {
-					cout << "\n";
-					for (int j = 0; j < 4; j++) {
-						cout << *(posMatrix + i * 4 + j) << " ";
-					}
+				if (isBelongTo(currentXR, currentYR, 18))
+				{
+					vertices[32] = { glm::vec3(0.378f, -0.504f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0), glm::vec2(0.0f, 1.0f) };
+					vertices[33] = { glm::vec3(0.378f, -0.829f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) };
+					vertices[34] = { glm::vec3(0.622f, -0.504f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f) };
+					vertices[35] = { glm::vec3(0.622f, -0.829f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) };
+					
+					glBindBuffer(GL_ARRAY_BUFFER, VBO);
+					glBufferData(GL_ARRAY_BUFFER,
+						sizeof(vertices),
+						&vertices[0],
+						GL_STATIC_DRAW);
+						
 				}
 
 			}

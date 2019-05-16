@@ -134,9 +134,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	}
 }
 
-bool init();
-void displayVersion();
-
 string readShaderSource(string);
 bool compileShader(GLuint);
 
@@ -147,8 +144,8 @@ glm::vec3 translate(glm::vec3, GLfloat, GLfloat, GLfloat);
 glm::vec3 scale(glm::vec3, GLfloat, GLfloat, GLfloat);
 glm::vec3 rotate(glm::vec3, GLfloat, GLfloat, GLfloat, GLfloat);
 
-int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
-{
+//int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
+int main() {
 	GLuint VAO;
 	GLuint VBO;
 	GLuint EBO;
@@ -252,7 +249,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 		77, 78, 79,
 	};
 
-	if (init() == false) {
+	if (init(&window, WIDTH, HEIGHT) == false) {
 		return 1;
 	}
 
@@ -720,36 +717,4 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 	glfwTerminate();
 
 	return 0;
-}
-
-
-
-
-
-bool init() {
-	if (glfwInit() == false) {
-		cout << "\nCould not init GLFW" << endl;
-		return false;
-	}
-	cout << "\nGLFW initialized" << endl;
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Klotski - Group #6", NULL, NULL);
-	glfwMakeContextCurrent(window);
-
-	if (glewInit() != GLEW_OK) {
-		cout << "\nCould not init GLEW" << endl;
-		return false;
-	}
-	cout << "\nGLEW initialized" << endl;
-
-	return true;
-}
-
-void displayVersion() {
-	const unsigned char* version = glGetString(GL_VERSION);
-	const unsigned char* renderer = glGetString(GL_RENDERER);
-	const unsigned char* vendor = glGetString(GL_VENDOR);
-
-	cout << "\nOpenGL Version: " << version
-		<< "\nOpenGL Renderer: " << renderer
-		<< "\nOpenGL Vendor: " << vendor << endl;
 }

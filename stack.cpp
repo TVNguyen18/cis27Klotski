@@ -1,7 +1,10 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <vector>
+/**
+* Program Name: KlotSki Game
+* Discussion  : stack.cpp
+* Written by  : Anh Tran
+* Date        : 2019/05/17
+*/
+
 #include "stack.h"
 
 using namespace std;
@@ -49,5 +52,12 @@ int* Stack::pop()
 int Stack::isEmpty()
 {
 	return (stackCount == 0);
+}
+int Stack::emptyStack(void)
+{
+	while (!this->isEmpty()) {
+		this->pop();
+	}
+	return 0;
 }
 ;

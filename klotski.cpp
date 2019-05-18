@@ -1,154 +1,26 @@
+/**
+* Program Name: KlotSki Game
+* Discussion  : klotski.cpp
+* Written by  : Anh Tran
+* Date        : 2019/05/17
+*/
+
 #include "include.h"
+#include "klotski.h"
 
 using namespace std;
 
-const int WIDTH = 640;
-const int HEIGHT = 480;
-GLFWwindow* window;
-
-double currentX = -1;
-double currentY = 0;
-
-double currentXR = 0;
-double currentYR = 0;
-
-int initialFlag = -1;
-
-int getCellNumber(int xpos, int ypos) {
-
-	if (xpos > -42 && xpos < 38 && ypos> 122 && ypos < 202)
-		return 0;
-
-	if (xpos > 40 && xpos < 120 && ypos> 120 && ypos < 200)
-		return 1;
-
-	if (xpos > 120 && xpos < 200 && ypos> 122 && ypos < 202)
-		return 2;
-
-	if (xpos > 202 && xpos < 282 && ypos> 122 && ypos < 202)
-		return 3;
-
-	if (xpos > -42 && xpos < 38 && ypos> 42 && ypos < 122)
-		return 4;
-
-	if (xpos > 40 && xpos < 120 && ypos> 42 && ypos < 122)
-		return 5;
-
-	if (xpos > 122 && xpos < 202 && ypos> 42 && ypos < 122)
-		return 6;
-
-	if (xpos > 202 && xpos < 282 && ypos> 42 && ypos < 122)
-		return 7;
-
-	if (xpos > -42 && xpos < 38 && ypos> -40 && ypos < 40)
-		return 8;
-
-	if (xpos > 40 && xpos < 120 && ypos> -40 && ypos < 40)
-		return 9;
-
-	if (xpos > 122 && xpos < 202 && ypos> -40 && ypos < 40)
-		return 10;
-
-	if (xpos > 202 && xpos < 282 && ypos> -40 && ypos < 40)
-		return 11;
-
-	if (xpos > -41 && xpos < 37 && ypos> -120 && ypos < -42)
-		return 12;
-
-	if (xpos > 41 && xpos < 119 && ypos> -120 && ypos < -42)
-		return 13;
-
-	if (xpos > 122 && xpos < 202 && ypos > -122 && ypos < -42)
-		return 14;
-
-	if (xpos > 203 && xpos < 281 && ypos > -120 && ypos < -42)
-		return 15;
-
-	if (xpos > -41 && xpos < 37 && ypos> -201 && ypos < -123)
-		return 16;
-
-	if (xpos > 41 && xpos < 119 && ypos > -201 && ypos < -123)
-		return 17;
-
-	if (xpos > 121 && xpos < 199 && ypos > -201 && ypos < -123)
-		return 18;
-
-	if (xpos > 203 && xpos < 281 && ypos > -201 && ypos < -123)
-		return 19;
-
-	if (xpos > -260 && xpos < -100 && ypos > -5 && ypos < 75) //undo
-		return 20;
-
-	if (xpos > -260 && xpos < -100 && ypos > -100 && ypos < -20) //reset
-		return 21;
-
-	if (xpos > -260 && xpos < -100 && ypos > -195 && ypos < -115) //exit
-		return 22;
-
-	return 50;  // out of range
-
-}
-
-void printVertexPos(glm::vec3 src) {
-	cout << src.s << " , " << src.t;
-}
-
-int getObjNumber(int* posMatrix, int cellNumber) {
-	if (cellNumber < 20)
-		return *(posMatrix + cellNumber);
-	else
-		return cellNumber;
-}
-
-
-int getMovingDirection(int startCell, int endCell) {
-	if (endCell == startCell + 1)
-		return 6; //moving to the right
-	if (endCell == startCell - 1)
-		return 4; //moving to the left
-	if (endCell == startCell - 4)
-		return 8; //moving up
-	if (endCell == startCell + 4)
-		return 2; //moving down
-	return 0; //moving out of range
-}
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		cout << "\nLeft click!";
-		glfwGetCursorPos(window, &currentX, &currentY);
-		cout << "\n" << currentX << "," << currentY;
-		currentX -= 320;
-		currentY = -currentY + 240;
-		cout << " => " << currentX << "," << currentY;
-		initialFlag = 1;
-	}
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-		cout << "\nLeft release!";
-		glfwGetCursorPos(window, &currentXR, &currentYR);
-		cout << "\n" << currentXR << "," << currentYR;
-		currentXR -= 320;
-		currentYR = -currentYR + 240;
-		cout << " => " << currentXR << "," << currentYR;
-	}
-}
-
-string readShaderSource(string);
-bool compileShader(GLuint);
-
-
-int uniformLocation;
-
-glm::vec3 translate(glm::vec3, GLfloat, GLfloat, GLfloat);
-glm::vec3 scale(glm::vec3, GLfloat, GLfloat, GLfloat);
-glm::vec3 rotate(glm::vec3, GLfloat, GLfloat, GLfloat, GLfloat);
 
 //int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
-int main() {
+int main()
+{
 	GLuint VAO;
 	GLuint VBO;
 	GLuint EBO;
+
+	const int totalObjs = 21;
+	const int totalCells = 20;
+	
 	int* posMatrix = new int[20]{
 		0, 1, 1, 2,
 		0, 1, 1, 2,
@@ -157,97 +29,40 @@ int main() {
 		8, -1, -1, 9
 	};
 
+	int* solMatrix;
+
 	Stack positionStack;
 
-	int exitFlag = 0;
+	int modeFlag = 0;
+	// modeFlag == 0 : Playing mode
+	// modeFlag == 1 : Playback mode
+	// modeFlag == 2 : Exit game
 
-	Vertex vertices[20 * 4];
-	Vertex cellVertices[20 * 4];
+	Vertex vertices[totalObjs * 4];
+	Vertex cellVertices[totalCells * 4];
+	GLuint indices[totalObjs * 6];
+
+	const char* vertexCSrc;
+	const char* fragmentCSrc;
+	string vertexSrc;
+	string fragmentSrc;
+
+	int imageWidth = 0;
+	int imageHeight = 0;
+	int objNumber;
+	int endCell;
+	int startCell;
+	GLuint texture[11];	
+	int SolStep = 0;
+
 	initVertexAry(vertices);
 	initCellVertexAry(cellVertices);
+	initIndices(indices);	
+	initSolMatrix(&solMatrix);
 
-	unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
-	GLuint indices[] = {
-		// obj 0
-		0, 1, 2,
-		1, 2, 3,
-
-		// obj 1
-		4, 5, 6,
-		5, 6, 7,
-
-		// obj 2
-		8, 9, 10,
-		9, 10, 11,
-
-		// obj 3
-		12, 13, 14,
-		13, 14, 15,
-
-		// obj 4
-		16, 17, 18,
-		17, 18, 19,
-
-		// obj 5
-		20, 21, 22,
-		21, 22, 23,
-
-		// obj 6
-		24, 25, 26,
-		25, 26, 27,
-
-		// obj 7
-		28, 29, 30,
-		29, 30, 31,
-
-		// obj 8
-		32, 33, 34,
-		33, 34, 35,
-
-		// obj 9
-		36, 37, 38,
-		37, 38, 39,
-
-		// obj 10
-		40, 41, 42,
-		41, 42, 43,
-
-		// obj 11
-		44, 45, 46,
-		45, 46, 47,
-
-		// obj 12
-		48, 49, 50,
-		49, 50, 51,
-
-		// obj 13
-		52, 53, 54,
-		53, 54, 55,
-
-		// obj 14
-		56, 57, 58,
-		57, 58, 59,
-
-		// obj 15
-		60, 61, 62,
-		61, 62, 63,
-
-		// obj 16
-		64, 65, 66,
-		65, 66, 67,
-
-		// obj 17
-		68, 69, 70,
-		69, 70, 71,
-
-		// obj 18
-		72, 73, 74,
-		73, 74, 75,
-
-		// obj 18
-		76, 77, 78,
-		77, 78, 79,
-	};
+	Timer tmr;
+	double t = 0;
+	SolStep = 0;
 
 	if (init(&window, WIDTH, HEIGHT) == false) {
 		return 1;
@@ -260,11 +75,13 @@ int main() {
 
 	glGenBuffers(1, &VBO);
 
-	string vertexSrc = readShaderSource("../vertex_shader.shader");
-	string fragmentSrc = readShaderSource("../fragment_shader.shader");
+	// read vertex and fragment shader from file
+	vertexSrc = readShaderSource("../vertex_shader.shader");
+	fragmentSrc = readShaderSource("../fragment_shader.shader");
 
-	const char* vertexCSrc = vertexSrc.c_str();
-	const char* fragmentCSrc = fragmentSrc.c_str();
+	// conver string to char* so it compatible with openGL
+	vertexCSrc = vertexSrc.c_str();
+	fragmentCSrc = fragmentSrc.c_str();
 
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -294,76 +111,96 @@ int main() {
 		GL_STATIC_DRAW);
 
 	// position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 
+		sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
 	glEnableVertexAttribArray(0);
 
 	// color
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 
+		sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
 	glEnableVertexAttribArray(1);
 
 	// texture
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, textCoord));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 
+		sizeof(Vertex), (GLvoid*)offsetof(Vertex, textCoord));
 	glEnableVertexAttribArray(2);
 
 	// bind VAO 0
 	glBindVertexArray(0);
 
+	// texture 1		
 
+	glGenTextures(11, texture);
 
+	unsigned char* green = 
+		SOIL_load_image("../images/0_texture.png",
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, green, 0, imageWidth, imageHeight);
 
-	// texture 1	
+	unsigned char* red = 
+		SOIL_load_image("../images/1_texture.png",
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, red, 1, imageWidth, imageHeight);
 
-	int imageWidth = 0;
-	int imageHeight = 0;
-	int objNumber;
-	GLuint texture0[10];
-	int i;
+	unsigned char* yellow = 
+		SOIL_load_image("../images/2_texture.png", 
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, yellow, 2, imageWidth, imageHeight);
 
-	glGenTextures(10, texture0);
+	unsigned char* blue = 
+		SOIL_load_image("../images/3_texture.png", 
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, blue, 3, imageWidth, imageHeight);
 
-	unsigned char* green = SOIL_load_image("../images/0_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, green, 0, imageWidth, imageHeight);
+	unsigned char* background = 
+		SOIL_load_image("../images/4_texture.png", 
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, background, 4, imageWidth, imageHeight);
 
-	unsigned char* red = SOIL_load_image("../images/1_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, red, 1, imageWidth, imageHeight);
+	unsigned char* logo = 
+		SOIL_load_image("../images/logo.png", 
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, logo, 5, imageWidth, imageHeight);
 
-	unsigned char* yellow = SOIL_load_image("../images/2_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, yellow, 2, imageWidth, imageHeight);
+	unsigned char* undoButton = 
+		SOIL_load_image("../images/undo_button.png",
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, undoButton, 6, imageWidth, imageHeight);
 
-	unsigned char* blue = SOIL_load_image("../images/3_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, blue, 3, imageWidth, imageHeight);
+	unsigned char* resetButton = 
+		SOIL_load_image("../images/reset_button.png",
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, resetButton, 7, imageWidth, imageHeight);
 
-	unsigned char* background = SOIL_load_image("../images/4_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, background, 4, imageWidth, imageHeight);
+	unsigned char* exitButton = 
+		SOIL_load_image("../images/exit_button.png",
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, exitButton, 8, imageWidth, imageHeight);
 
-	unsigned char* logo = SOIL_load_image("../images/logo.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, logo, 5, imageWidth, imageHeight);
+	unsigned char* solButton = 
+		SOIL_load_image("../images/sol_button.png",
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, solButton, 9, imageWidth, imageHeight);
 
-	unsigned char* undoButton = SOIL_load_image("../images/undo_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, undoButton, 6, imageWidth, imageHeight);
-
-	unsigned char* resetButton = SOIL_load_image("../images/reset_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, resetButton, 7, imageWidth, imageHeight);
-
-	unsigned char* exitButton = SOIL_load_image("../images/exit_button.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, exitButton, 8, imageWidth, imageHeight);
-
-	unsigned char* exit = SOIL_load_image("../images/exit_texture.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-	loadTexture(texture0, exit, 9, imageWidth, imageHeight);
-
-
+	unsigned char* exitBackground = 
+		SOIL_load_image("../images/exit_texture.png", 
+		&imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+	loadTexture(texture, exitBackground, 10, 
+		imageWidth, imageHeight);
+	
 	while (!glfwWindowShouldClose(window)) {
 
 		// Update input
 		glfwPollEvents();
 
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
+	
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == 
+			GLFW_RELEASE && initialFlag != -1) {
 
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && initialFlag != -1) {
-
-			int startCell = getCellNumber(currentX, currentY);
-			int endCell = getCellNumber(currentXR, currentYR);
-			int objNumber = getObjNumber(posMatrix, startCell);
+			startCell = getCellNumber(currentX, currentY);
+			endCell = getCellNumber(currentXR, currentYR);
+			objNumber = getObjNumber(posMatrix, startCell);
 
 			//reset the flag
 			initialFlag = -1;
@@ -372,20 +209,13 @@ int main() {
 			{
 				//  put the out of range value for objNumber
 				objNumber = 50;
-			}
-
-			if (*(posMatrix + endCell) != -1) //endCell is not empty => do nothing
-			{
-				// do something
-			}
-
-			//start testing			
-
+			}			
+	
 			cout << "\nstartCell = " << startCell;
 			cout << "\nendCell = " << endCell;
 			cout << "\nObjSelected = " << objNumber;
 
-			// looking for the first cell which contains the objSelected
+			// looking for the first cell contains the objSelected
 			for (int i = 0; i < 20; i++) {
 				if (*(posMatrix + i) == objNumber) {
 					startCell = i;
@@ -394,263 +224,16 @@ int main() {
 				}
 			}
 
-			switch (objNumber) // which kind of object selected
-			{
-			case 1: //the red
-				cout << "\nRed object Selected!";
-				if (endCell == startCell + 2 || endCell == startCell + 6) //moving right
-				{
-					if (startCell % 4 == 2) break; // last column
-					if (*(posMatrix + startCell + 2) != -1 || *(posMatrix + startCell + 6) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = *(posMatrix + startCell + 4) = -1;
-					*(posMatrix + startCell + 2) = *(posMatrix + startCell + 6) = objNumber;
-					break;
-				}
-				if (endCell == startCell - 1 || endCell == startCell + 3) //moving left
-				{
-					cout << "\nMoving left!";
-					if (startCell % 4 == 0) break; // first column
-					if (*(posMatrix + startCell - 1) != -1 || *(posMatrix + startCell + 3) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell + 1) = *(posMatrix + startCell + 5) = -1;
-					*(posMatrix + startCell - 1) = *(posMatrix + startCell + 3) = objNumber;
-					break;
-				}
-				if ((endCell == startCell - 4) || (endCell == startCell - 3)) //moving up
-				{
-					cout << "\nMoving up!";
-					if (startCell < 4) break; // first row
-					if (*(posMatrix + startCell - 4) != -1 || *(posMatrix + startCell - 3) != -1) //destination cells are not empty									
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell + 4) = *(posMatrix + startCell + 5) = -1;
-					*(posMatrix + startCell - 4) = *(posMatrix + startCell - 3) = objNumber;
-					break;
-				}
-				if ((endCell == startCell + 8) || (endCell == startCell + 9)) //moving down
-				{
-					cout << "\nMoving down!";
-
-					if (*(posMatrix + startCell + 8) != -1 || *(posMatrix + startCell + 9) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = *(posMatrix + startCell + 1) = -1;
-					*(posMatrix + startCell + 8) = *(posMatrix + startCell + 9) = objNumber;
-					break;
-				}
-				break;
-			case 4: //the yellow
-				cout << "\nYellow object Selected!";
-				if (endCell == startCell + 2) //moving right
-				{
-					if (startCell % 4 == 2) break; // last column
-					if ((*(posMatrix + startCell + 2) != -1)) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = -1;
-					*(posMatrix + startCell + 2) = objNumber;
-
-					break;
-				}
-				if (endCell == startCell - 1) //moving left
-				{
-					cout << "\nMoving left!";
-					if (startCell % 4 == 0) break; // first column
-					if (*(posMatrix + startCell - 1) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell + 1) = -1;
-					*(posMatrix + startCell - 1) = objNumber;
-
-					break;
-				}
-				if ((endCell == startCell - 4) || (endCell == startCell - 3)) //moving up
-				{
-					cout << "\nMoving up!";
-					if (startCell < 4) break; // first row
-					if (*(posMatrix + startCell - 4) != -1 || *(posMatrix + startCell - 3) != -1) //destination cells are not empty									
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = *(posMatrix + startCell + 1) = -1;
-					*(posMatrix + startCell - 4) = *(posMatrix + startCell - 3) = objNumber;
-					break;
-				}
-				if ((endCell == startCell + 4) || (endCell == startCell + 5)) //moving down
-				{
-					cout << "\nMoving down!";
-
-					if (*(posMatrix + startCell + 4) != -1 || *(posMatrix + startCell + 5) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = *(posMatrix + startCell + 1) = -1;
-					*(posMatrix + startCell + 4) = *(posMatrix + startCell + 5) = objNumber;
-					break;
-				}
-				break;
-			case 0:
-			case 2:
-			case 3:
-			case 5: //the green obj
-				cout << "\nGreen object Selected!";
-				if ((endCell == startCell + 1) || (endCell == startCell + 5)) //moving right
-				{
-					if (startCell % 4 == 3) break; // last column
-					if ((*(posMatrix + startCell + 1) != -1) || (*(posMatrix + startCell + 5) != -1)) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = *(posMatrix + startCell + 4) = -1;
-					*(posMatrix + startCell + 1) = *(posMatrix + startCell + 5) = objNumber;
-
-					break;
-				}
-				if ((endCell == startCell - 1) || (endCell == startCell + 3)) //moving left
-				{
-					cout << "\nMoving left!";
-					if (startCell % 4 == 0) break; // first column
-					if (*(posMatrix + startCell - 1) != -1 || *(posMatrix + startCell + 3) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = *(posMatrix + startCell + 4) = -1;
-					*(posMatrix + startCell - 1) = *(posMatrix + startCell + 3) = objNumber;
-					break;
-				}
-				if (endCell == startCell - 4) //moving up
-				{
-					cout << "\nMoving up!";
-					if (startCell < 4) break; // first row
-					if (*(posMatrix + startCell - 4) != -1) //destination cells are not empty									
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell + 4) = -1;
-					*(posMatrix + startCell - 4) = objNumber;
-					break;
-				}
-				if (endCell == startCell + 8) //moving down
-				{
-					cout << "\nMoving down!";
-					if (startCell > 15) break; // last row					
-					if (*(posMatrix + startCell + 8) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = -1;
-					*(posMatrix + startCell + 8) = objNumber;
-
-					break;
-				}
-				break;
-
-			case 6: // blue obj
-			case 7:
-			case 8:
-			case 9:
-				cout << "\nBlue object Selected!";
-				if (endCell == startCell + 1) //moving right
-				{
-					cout << "\nMoving right!";
-					if (startCell % 4 == 3) break; // last column
-
-					if (*(posMatrix + startCell + 1) != -1) //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					*(posMatrix + startCell) = -1;
-					*(posMatrix + startCell + 1) = objNumber;
-
-					break;
-				}
-				if (endCell == startCell - 1) //moving left
-				{
-					cout << "\nMoving left!";
-					if (startCell % 4 == 0) break; // first column
-					if (*(posMatrix + startCell - 1) != -1)  //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					posMatrix[startCell] = -1;
-					posMatrix[startCell - 1] = objNumber;
-					break;
-				}
-				if (endCell == startCell - 4)  //moving up
-				{
-					cout << "\nMoving up!";
-					if (startCell < 4) break; // first row
-					if (*(posMatrix + startCell - 4) != -1)  //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					posMatrix[startCell] = -1;
-					posMatrix[startCell - 4] = objNumber;
-					break;
-				}
-				if (endCell == startCell + 4) //moving down
-				{
-					cout << "\nMoving down!";
-					if (startCell > 15) break; // last row
-					if (*(posMatrix + startCell + 4) != -1)  //destination cells are not empty
-						break;
-
-					//update posMatrix
-					positionStack.push(posMatrix);
-					posMatrix[startCell] = -1;
-					posMatrix[startCell + 4] = objNumber;
-					break;
-				}
-				break;
-			case 20: //Undo
-				if (!positionStack.isEmpty()) {
-					delete[] posMatrix;
-					posMatrix = positionStack.pop();
-				}
-				break;
-			case 21: //reset
-				while (!positionStack.isEmpty()) {
-					delete[] posMatrix;
-					posMatrix = positionStack.pop();
-				}
-				break;
-			case 22:
-				exitFlag = 1;
-				break;
-			default:
-				// out of range
-				break;
-			}
+			// update posMatrix according to the object moved
+			updatePositionMatrix(objNumber, startCell, endCell, 
+				modeFlag, posMatrix, &positionStack);
 
 			//update vertices
 			updateVertexAray(vertices, cellVertices, posMatrix);
 
 			if (objNumber < 20) {
-				cout << "\n\nNew Position of Object " << objNumber << " is: ";
+				cout << "\n\nNew Position of Object " 
+					<< objNumber << " is: ";
 				printVertexPos(vertices[objNumber * 4].position);
 			}
 			cout << "\nPosition Matrix updated = ";
@@ -666,17 +249,13 @@ int main() {
 			glBufferData(GL_ARRAY_BUFFER,
 				sizeof(vertices),
 				&vertices[0],
-				GL_STATIC_DRAW);
-
-
-			//end testing
-
+				GL_STATIC_DRAW);	
 		}
-
 
 		// clear
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | 
+			GL_STENCIL_BUFFER_BIT);
 
 		// use a program
 		glUseProgram(shaderProgramID);
@@ -686,35 +265,144 @@ int main() {
 		glEnableVertexAttribArray(0);
 
 		// set up uniform
-		glUniform1i(glGetUniformLocation(shaderProgramID, "my_Texture"), 0);
+		glUniform1i(glGetUniformLocation(shaderProgramID, 
+			"my_Texture"), 0);
 
-		if (exitFlag) {
-			// activate texture
+		switch (modeFlag) {
+		case 0: // Playing mode
+			SolStep = 0;
+			bindAndDrawTexture(texture, shaderProgramID);
+			break;
+		case 1: // Playback mode
+			if (SolStep == 117) { 
+				//done solution => go back to playing mode
+				modeFlag = 0;
+				SolStep = 0;
+				break;
+			}			
+
+			if(SolStep == 0) // looking for soltion step
+				SolStep = findStep(posMatrix, solMatrix);
+
+			// if current position does not match solution steps
+			// and it is possible to undo then undo
+
+			if (SolStep == 0 && !positionStack.isEmpty()) {
+				delete[] posMatrix;
+				posMatrix = positionStack.pop();
+				//update vertices	
+				updateVertexAray(vertices, cellVertices, posMatrix);
+				//update vertex buffer
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER,
+					sizeof(vertices),
+					&vertices[0],
+					GL_STATIC_DRAW);
+
+				tmr.reset();
+				t = tmr.elapsed();
+				while (t < 0.5) {
+
+					bindAndDrawTexture(texture, shaderProgramID);
+					t = tmr.elapsed();
+				}
+			}
+			else {  //find a proper step then continue from that step		
+				std::cout << "\ntime duration : " << t << std::endl;
+				cout << "\nStep " << SolStep;
+
+				// update to new position
+				updatePosMatrixTo_nthStep(posMatrix, &positionStack, 
+					solMatrix, SolStep);
+
+				cout << "\nPosition Matrix updated = ";
+				for (int i = 0; i < 5; i++) {
+					cout << "\n";
+					for (int j = 0; j < 4; j++) {
+						cout << *(posMatrix + i * 4 + j) << " ";
+					}
+				}
+
+				//update vertices	
+				updateVertexAray(vertices, cellVertices, posMatrix);
+				//update vertex buffer
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER,
+					sizeof(vertices),
+					&vertices[0],
+					GL_STATIC_DRAW);
+
+				tmr.reset();
+				t = tmr.elapsed();
+				while (t < 0.5) {
+
+					bindAndDrawTexture(texture, shaderProgramID);
+					t = tmr.elapsed();
+				}
+				SolStep++;
+			}			
+
+			break;
+		case 2: // exit game
+			// activate texture		
+
+			glUniform1i(glGetUniformLocation(shaderProgramID, 
+				"my_Texture"), 0);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texture0[9]);
-
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void*)(114 * sizeof(int)));
-
-		} else {
-            bindAndDrawTexture(texture0, shaderProgramID);
-		}
-
-
-
+			glBindTexture(GL_TEXTURE_2D, texture[10]);
+			
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 
+				(const void*)(120 * sizeof(int)));
+			break;	
+		}		
+			   
 		//clean up
-
-
 		glDisableVertexAttribArray(0);
 
 		glUseProgram(0);
 
 		glfwSwapBuffers(window);
 		glFlush();
-
 	}
-
 
 	glfwTerminate();
 
+	// clean up
+	positionStack.emptyStack();
+	delete[] posMatrix;
+	posMatrix = nullptr;
+	delete[] solMatrix;
+	solMatrix = nullptr;
+
 	return 0;
 }
+
+void mouse_button_callback(GLFWwindow* window, int button, 
+	int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) 
+	{
+		cout << "\nLeft click!";
+		glfwGetCursorPos(window, &currentX, &currentY);
+		cout << "\n" << currentX << "," << currentY;
+		currentX -= 320;
+		currentY = -currentY + 240;
+		cout << " => " << currentX << "," << currentY;
+		initialFlag = 1;
+	}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) 
+	{
+		cout << "\nLeft release!";
+		glfwGetCursorPos(window, &currentXR, &currentYR);
+		cout << "\n" << currentXR << "," << currentYR;
+		currentXR -= 320;
+		currentYR = -currentYR + 240;
+		cout << " => " << currentXR << "," << currentYR;
+	}
+}
+
+
+
+
+
+

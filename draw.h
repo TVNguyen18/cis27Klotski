@@ -1,13 +1,21 @@
+/**
+* Program Name: KlotSki Game
+* Discussion  : Declaration File --
+*				  draw.h
+* Written by  : Anh Tran
+* Date        : 2019/05/17
+*/
+
 #ifndef DRAW_H
 #define DRAW_H
 
-#include <iostream>
-#include <GL/glew.h>
-#include <SOIL2/SOIL2.h>
+#include "include.h"
 
 using namespace std;
 
-void loadTexture(GLuint texture[], unsigned char* image, int i, int w, int h);
-void bindAndDrawTexture(GLuint texture0[], GLuint shaderProgramID);
+void loadTexture(GLuint texture[], unsigned char* image,
+	int i, int w, int h);
+void bindAndDrawTexture(GLuint texture0[], 
+	GLuint shaderProgramID);
 
 #endif

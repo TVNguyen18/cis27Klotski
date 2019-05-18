@@ -1,16 +1,17 @@
+/**
+* Program Name: KlotSki Game
+* Discussion  : Declaration File --
+*				  vertex.h
+* Written by  : Anh Tran
+* Date        : 2019/05/17
+*/
+
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <vector>
+#include "include.h"
 
 using namespace std;
-
-#include <glm/glm.hpp>
-
-#include "stack.h"
 
 struct Vertex {
 	glm::vec3 position;
@@ -22,6 +23,10 @@ typedef struct Vertex* TVertexAddr;
 
 void initVertexAry(Vertex myVertexAry[]);
 void initCellVertexAry(Vertex cellVerticesAry[]);
+void initIndices(GLuint indices[]);
+
 void printVertexAry(Vertex myVertexAry[]);
-void updateVertexAray(Vertex myVertexAry[], Vertex cellVerticesAry[], int posMatrix[]);
+void updateVertexAray(Vertex myVertexAry[], 
+	Vertex cellVerticesAry[], int posMatrix[]);
+
 #endif

@@ -1,3 +1,10 @@
+/**
+* Program Name: KlotSki Game
+* Discussion  : shader.cpp
+* Written by  : Anh Tran
+* Date        : 2019/05/17
+*/
+
 #include "shader.h"
 
 string readShaderSource(string fileName) {

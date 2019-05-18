@@ -1,10 +1,13 @@
+/**
+* Program Name: KlotSki Game
+* Discussion  : Declaration File --
+*				  stack.h
+* Written by  : Anh Tran
+* Date        : 2019/05/17
+*/
+
 #ifndef STACK_H
 #define STACK_H
-
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <vector>
 
 using namespace std;
 
@@ -21,8 +24,9 @@ public:
 	Stack();
 	~Stack();
 	void push(int*);
-	int* pop();
-	int isEmpty();
+	int* pop(void);
+	int isEmpty(void);
+	int emptyStack(void);
 private:
 	int stackCount;
 	TStackNodePtr top;

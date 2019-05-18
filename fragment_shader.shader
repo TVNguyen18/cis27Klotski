@@ -1,3 +1,10 @@
+/**
+* Program Name: KlotSki Game
+* Discussion  : Fragment Shader
+* Written by  : Anh Tran
+* Date        : 2019/05/17
+*/
+
 #version 410
 
 in vec3 vs_position;

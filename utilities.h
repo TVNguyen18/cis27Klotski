@@ -16,7 +16,7 @@ int getObjNumber(int* posMatrix, int cellNumber);
 int getMovingDirection(int startCell, int endCell);
 int getCellNumber(double xpos, double ypos);
 void updatePositionMatrix(int objNumber, int startCell, 
-	int endCell, int& exitFlag, int* posMatrix, 
+	int endCell, int& exitFlag, int** posMatrix, 
 	Stack* positionStack);
 void updatePosMatrixTo_nthStep(int * posMatrix, 
 	Stack * positionStack, int * solMatrix, int step);

@@ -11,8 +11,7 @@
 using namespace std;
 
 
-//int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
-int main()
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 {
 	GLuint VAO;
 	GLuint VBO;
@@ -226,7 +225,7 @@ int main()
 
 			// update posMatrix according to the object moved
 			updatePositionMatrix(objNumber, startCell, endCell, 
-				modeFlag, posMatrix, &positionStack);
+				modeFlag, &posMatrix, &positionStack);
 
 			//update vertices
 			updateVertexAray(vertices, cellVertices, posMatrix);
@@ -371,8 +370,6 @@ int main()
 	positionStack.emptyStack();
 	delete[] posMatrix;
 	posMatrix = nullptr;
-	delete[] solMatrix;
-	solMatrix = nullptr;
 
 	return 0;
 }

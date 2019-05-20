@@ -37,7 +37,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 	// modeFlag == 1 : Playback mode
 	// modeFlag == 2 : Exit game
 
-	Vertex vertices[totalObjs * 4];
+	Vertex objVertices[totalObjs * 4];
 	Vertex cellVertices[totalCells * 4];
 	GLuint indices[totalObjs * 6];
 
@@ -48,13 +48,13 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 
 	int imageWidth = 0;
 	int imageHeight = 0;
-	int objNumber;
-	int endCell;
-	int startCell;
+	int objSelected;
+	int releasedCell;
+	int clickedCell;
 	GLuint texture[11];	
 	int SolStep = 0;
 
-	initVertexAry(vertices);
+	initVertexAry(objVertices);
 	initCellVertexAry(cellVertices);
 	initIndices(indices);	
 	initSolMatrix(&solMatrix);
@@ -98,8 +98,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER,
-		sizeof(vertices),
-		&vertices[0],
+		sizeof(objVertices),
+		&objVertices[0],
 		GL_STATIC_DRAW);
 
 	glGenBuffers(1, &EBO);
@@ -197,43 +197,43 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == 
 			GLFW_RELEASE && initialFlag != -1) {
 
-			startCell = getCellNumber(currentX, currentY);
-			endCell = getCellNumber(currentXR, currentYR);
-			objNumber = getObjNumber(posMatrix, startCell);
+			clickedCell = getCellNumber(currentX, currentY);
+			releasedCell = getCellNumber(currentXR, currentYR);
+			objSelected = getObjNumber(posMatrix, clickedCell);
 
 			//reset the flag
 			initialFlag = -1;
 
-			if (objNumber == -1) // clicked on the empty cell
+			if (objSelected == -1) // clicked on the empty cell
 			{
 				//  put the out of range value for objNumber
-				objNumber = 50;
+				objSelected = 50;
 			}			
 	
-			cout << "\nstartCell = " << startCell;
-			cout << "\nendCell = " << endCell;
-			cout << "\nObjSelected = " << objNumber;
+			cout << "\nstartCell = " << clickedCell;
+			cout << "\nendCell = " << releasedCell;
+			cout << "\nObjSelected = " << objSelected;
 
 			// looking for the first cell contains the objSelected
 			for (int i = 0; i < 20; i++) {
-				if (*(posMatrix + i) == objNumber) {
-					startCell = i;
-					cout << "\nstartCell updated to = " << startCell;
+				if (*(posMatrix + i) == objSelected) {
+					clickedCell = i;
+					cout << "\nstartCell updated to = " << clickedCell;
 					i = 20;
 				}
 			}
 
 			// update posMatrix according to the object moved
-			updatePositionMatrix(objNumber, startCell, endCell, 
+			updatePositionMatrix(objSelected, clickedCell, releasedCell, 
 				modeFlag, &posMatrix, &positionStack);
 
 			//update vertices
-			updateVertexAray(vertices, cellVertices, posMatrix);
+			updateVertexAray(objVertices, cellVertices, posMatrix);
 
-			if (objNumber < 20) {
+			if (objSelected < 20) {
 				cout << "\n\nNew Position of Object " 
-					<< objNumber << " is: ";
-				printVertexPos(vertices[objNumber * 4].position);
+					<< objSelected << " is: ";
+				printVertexPos(objVertices[objSelected * 4].position);
 			}
 			cout << "\nPosition Matrix updated = ";
 			for (int i = 0; i < 5; i++) {
@@ -246,8 +246,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 			//update vertex buffer
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER,
-				sizeof(vertices),
-				&vertices[0],
+				sizeof(objVertices),
+				&objVertices[0],
 				GL_STATIC_DRAW);	
 		}
 
@@ -290,12 +290,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 				delete[] posMatrix;
 				posMatrix = positionStack.pop();
 				//update vertices	
-				updateVertexAray(vertices, cellVertices, posMatrix);
+				updateVertexAray(objVertices, cellVertices, posMatrix);
 				//update vertex buffer
 				glBindBuffer(GL_ARRAY_BUFFER, VBO);
 				glBufferData(GL_ARRAY_BUFFER,
-					sizeof(vertices),
-					&vertices[0],
+					sizeof(objVertices),
+					&objVertices[0],
 					GL_STATIC_DRAW);
 
 				tmr.reset();
@@ -323,12 +323,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd)
 				}
 
 				//update vertices	
-				updateVertexAray(vertices, cellVertices, posMatrix);
+				updateVertexAray(objVertices, cellVertices, posMatrix);
 				//update vertex buffer
 				glBindBuffer(GL_ARRAY_BUFFER, VBO);
 				glBufferData(GL_ARRAY_BUFFER,
-					sizeof(vertices),
-					&vertices[0],
+					sizeof(objVertices),
+					&objVertices[0],
 					GL_STATIC_DRAW);
 
 				tmr.reset();
